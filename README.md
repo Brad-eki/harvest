@@ -5,8 +5,11 @@ Time tracking
 
 Requirements
 =======
+
 Python 2.7
+
 Django 1.6.2
+
 Bootstrap 3.1.1
 
 Licence
