@@ -1,7 +1,7 @@
 Harvest
 ==============
 
-Time tracking
+Harvest allows its users to record time spent on tasks. Tracking time can allow for increased productivity, as businesses better understand what business practices lead to wasted time. 
 
 Requirements
 ==============
