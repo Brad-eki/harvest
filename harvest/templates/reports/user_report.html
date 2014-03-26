@@ -1,0 +1,12 @@
+{% extends 'general/base.html' %}
+
+{% block titulo %}
+Reports
+{% endblock %}
+
+{% block content %}
+    <h1>User Report</h1>
+    {{ request.path }}
+{% endblock %}
+
+{% block sub-menu %}{% include "general/submenu_reports.html" %}{% endblock %}

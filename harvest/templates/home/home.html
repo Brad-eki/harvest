@@ -1,0 +1,18 @@
+{% extends 'general/base.html' %}
+{% load extra_tags %}
+
+
+{% block home-item-selected %}class="active"{% endblock %}
+
+
+{% block sub-menu %}
+{% endblock %}
+
+{% block titulo %}Home{% endblock %}
+
+{% block content %}
+    <h1>home</h1>
+    {{ request.path }}
+{% endblock %}
+
+

@@ -1,0 +1,22 @@
+{% extends 'general/base.html' %}
+
+{% block titulo %}
+Project List
+{% endblock %}
+
+{% block content %}
+    <h1>Timesheet</h1>
+     {{ request.path }}
+{% endblock %}
+
+{% block sub-menu %}
+
+    <div class="sub-navbar">
+        <div class="container">
+          <nav class="sub-nav">
+            <a href="/timesheet/" class="sub-nav-item active" href="#">Time</a>
+          </nav>
+        </div>
+    </div>
+
+{% endblock %}
