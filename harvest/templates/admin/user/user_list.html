@@ -1,0 +1,78 @@
+{% extends 'general/base.html' %}
+
+{% block javascript %}
+    <script src='{{STATIC_URL}}js/user-admin.js'></script>
+{% endblock %}
+
+{% block titulo %}
+Manage Users
+{% endblock %}
+
+{% block sub-menu %}
+    {% include "general/submenu_manage.html" %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row"/>
+    <div class="col-xs-8 title-block">
+        <h3>Manage Users</h3>
+    </div>
+    <div class="col-xs-4">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search by user">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px"/>
+    <div class="col-xs-6">
+        <a href="/manage/users/new" class="btn btn-success add-button"><span class="glyphicon glyphicon-plus"></span>Create User</a>
+    </div>
+    <div class="col-xs-6" >
+        <div class="upper_side_link" >
+            <a href="/manage/users/archived/">Manage Archived Projects</a>
+        </div>
+    </div>
+</div>
+
+<div class="row"/>
+    <div class="col-xs-12">
+        <ul class="manage-list">
+            <li>
+                <h2 class="manage-list-header">Users (2)</h2>
+            </li>
+
+            <li>
+              <div id="1234" class="manage-list-item user">
+                <a href="/manage/user/edit/1" class="btn btn-info left-button">Edit</a>
+                <div style="display: inline-block;">
+                  <h3>Sergio Cirasa</h3><span class="label label-danger">Admin</span>
+                  <p>Last Report on 29 Mar 2014</p>
+                </div>
+                <div class="secondary-buttons">
+                  <a href="#" class="btn btn-warning right-button">Archive</a>
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div id="1234" class="manage-list-item user">
+                <a href="/manage/user/edit/2" class="btn btn-info left-button">Edit</a>
+                <div style="display: inline-block;">
+                  <h3>Sergio Cirasa</h3>
+                  <p>Last Report on 29 Mar 2014</p>
+                </div>
+                <div class="secondary-buttons">
+                  <a href="#" class="btn btn-warning right-button">Archive</a>
+                </div>
+              </div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+{% endblock %}

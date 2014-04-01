@@ -1,0 +1,107 @@
+{% extends 'general/base.html' %}
+
+{% block javascript %}
+    <script src='{{STATIC_URL}}js/user-admin.js'></script>
+{% endblock %}
+
+{% block titulo %}
+Create User
+{% endblock %}
+
+{% block sub-menu %}
+    {% include "general/submenu_manage.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row"/>
+    <div class="col-xs-12 title-block">
+        <h3>Create New User</h3>
+    </div>
+</div>
+
+<div class="row"/>
+    <div class="col-xs-12 content_profile">
+
+        <div id="create-user-error" class="alert alert-danger" style="display: none;">
+            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+            Oops! You’ve got some things to fix.
+        </div>
+
+        <form class="form-horizontal" role="form">
+
+          <div id="username-form" class="form-group">
+            <label class="col-sm-2 control-label">Username (*)</label>
+            <div class="col-sm-7">
+              <input type="text" id="username" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">First Name</label>
+            <div class="col-sm-7">
+              <input type="text" id="firstname" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Last Name</label>
+            <div class="col-sm-7">
+              <input type="text" id="lastname" class="form-control">
+            </div>
+          </div>
+
+          <div id="email-form" class="form-group" style="border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+            <label class="col-sm-2 control-label" autocomplete="off">Email (*)</label>
+            <div class="col-sm-7">
+              <input type="text" id="email" class="form-control">
+            </div>
+          </div>
+
+          <div id="password-form" class="form-group">
+            <label class="col-sm-2 control-label">Password (*)</label>
+            <div class="col-sm-7">
+              <input id="password" type="password" class="form-control" autocomplete="off">
+            </div>
+
+            <div class="col-sm-3">
+                <div id="strength-meter" class="validation">
+                    <p class="status" id="password-strength"></p>
+                    <div class="bar" id="first"></div>
+                    <div class="bar" id="second"></div>
+                    <div class="bar" id="third"></div>
+                </div>
+            </div>
+          </div>
+
+          <div id="confirm-password-form" class="form-group">
+            <label class="col-sm-2 control-label">Confirm Password</label>
+            <div class="col-sm-7 has-feedback">
+              <input type="password" id="password_confirmation" class="form-control">
+              <span id="password-match-icon" class="glyphicon glyphicon-ok form-control-feedback" style="display: none"></span>
+            </div>
+          </div>
+
+          <div class="form-group border">
+            <div class="col-sm-offset-2 col-sm-2">
+              <div class="checkbox">
+                <label>
+                  <input id="is_admin" type="checkbox"> Is Admin
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div  class="form-group">
+                <div class="col-sm-offset-2 col-sm-9 form-buttons">
+                    <a href="#" id="create-user" class="btn btn-success">Create</a>
+                    <a href="/manage/users/" id="cancel-profile" type="submit" class="btn btn-default">Cancel</a>
+                </div>
+          </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

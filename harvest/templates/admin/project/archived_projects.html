@@ -1,0 +1,58 @@
+{% extends 'general/base.html' %}
+
+{% block javascript %}
+    <script src='{{STATIC_URL}}js/project-admin.js'></script>
+{% endblock %}
+
+{% block titulo %}
+Archived Projects
+{% endblock %}
+
+{% block sub-menu %}
+    {% include "general/submenu_manage.html" %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row"/>
+    <div class="col-xs-12 title-block">
+        <h3>Archived Projects</h3>
+        <h4>Click on a project to reactivate it. When you're done, you can go back to the <a href="/manage/projects/">active project list.</a></h4>
+    </div>
+</div>
+
+
+<div class="row"/>
+    <div class="col-xs-12">
+        <ul id="archived-projects" class="manage-list">
+            <li>
+                <h2 class="manage-list-header">Projects (2)</h2>
+            </li>
+
+            <li class="archived">
+              <div id="1" class="manage-list-item">
+                <a href="#" class="reactivate-link"></a>
+                <div style="display: inline-block;">
+                  <h3>Al watan</h3>
+                  <p>Android</p>
+                </div>
+              </div>
+            </li>
+
+            <li class="archived">
+              <div id="2" class="manage-list-item">
+                <a href="#" class="reactivate-link"></a>
+                <div style="display: inline-block;">
+                  <h3>Ky two</h3>
+                  <p>iPhone</p>
+                </div>
+              </div>
+            </li>
+
+        </ul>
+
+    </div>
+</div>
+
+{% endblock %}
