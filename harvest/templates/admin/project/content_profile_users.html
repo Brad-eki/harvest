@@ -1,9 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
 
-</body>
-</html>
+<div class="title-block">
+<h3>Team</h3>
+</div>
+
+<div class="col-xs-12 well" style="margin-top:10px;">
+    <div class="col-xs-8">
+          <select data-placeholder="Select people to assign..." class="chosen-select" multiple tabindex="6">
+              <option value="A">Dallas Cowboys</option>
+              <option value="B">New York Giants</option>
+              <option value="C">Philadelphia Eagles</option>
+              <option value="D">Washington Redskins</option>
+          </select>
+    </div>
+
+    <div class="col-xs-4">
+        <button id="assign-rojects" type="submit" class="btn btn-success">Assign People</button>
+        <img id="assign-rojects-loading" src="{{STATIC_URL}}img/loading.gif" width="16px" height="16px"/>
+    </div>
+
+</div>
+<div class="row"/>
+    <div class="col-xs-12 proyect-list">
+        <table class="table" style="margin-top: 20px">
+                <tr>
+                    <td>
+                      <a href="#" class="remove"><span class="glyphicon glyphicon-remove"></span></a>
+                      <a href="#" class="proyect-link">Sergio Cirasa</a>
+                    </td>
+                </tr>
+          </table>
+    </div>
+</div>

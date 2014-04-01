@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # Identificando la ruta del proyecto
+
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'harvest',
+    'extra_template_tags',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,6 +60,17 @@ TEMPLATE_LOADERS = (
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,'harvest/templates'),
+)
+
+# Se especifican los modulos que van a ser cargados en la variable request q se le pasa a los templates
+TEMPLATE_CONTEXT_PROCESSORS = (
+"django.contrib.auth.context_processors.auth",
+"django.core.context_processors.debug",
+"django.core.context_processors.i18n",
+"django.core.context_processors.media",
+"django.core.context_processors.static",
+"django.contrib.messages.context_processors.messages",
+'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'timesheet.urls'
@@ -125,4 +138,3 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
      os.path.join(BASE_DIR,'timesheet/static'),
 )
-

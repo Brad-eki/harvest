@@ -1,7 +1,7 @@
 <div class="sub-navbar">
     <div class="container">
       <nav class="sub-nav">
-        <a href="/manage/users/" class="sub-nav-item {% if "/manage/users/" in request.path%}active{% endif %}">Users</a>
+        <a href="/manage/users/" class="sub-nav-item {% if "/manage/users/" in request.path or "/user/" in request.path%}active{% endif %}">Users</a>
         <a href="/manage/projects/" class="sub-nav-item {% if "/manage/projects/" in request.path%}active{% endif %}">Projects</a>
       </nav>
     </div>

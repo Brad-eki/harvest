@@ -4,6 +4,16 @@
 
 $(function () {
 
+    $(".user").click(function(){
+        window.location="/manage/user/edit/"+$(this).attr('id');
+
+    });
+
+    $(".archived").click(function(){
+        $(this).remove();
+        //TODO: llamar al WS
+    });
+
     $("#assign-rojects").click(function(){
         var array = $(".chosen-select").val();
 
@@ -67,7 +77,37 @@ $(function () {
         notifyIfPasswordsMach();
     });
 
+    $("#create-user").click(function() {
+        var est1 = password_validation.check_confirmation_match();
+        var est2 = password_validation.check_length();
 
+        if(!est1 || !est2){
+            $("#password-form").addClass("has-error");
+            $("#confirm-password-form").addClass("has-error");
+        }else{
+            $("#password-form").removeClass("has-error");
+            $("#confirm-password-form").removeClass("has-error");
+        }
+
+        if($("#username").val().length<=0){
+            $("#username-form").addClass("has-error");
+        }else{
+            $("#username-form").removeClass("has-error");
+        }
+
+        if($("#email").val().length<=0){
+            $("#email-form").addClass("has-error");
+        }else{
+            $("#email-form").removeClass("has-error");
+        }
+
+        if(est1 && est2 && $("#username").val().length>0 && $("#email").val().length>0){
+            $("#create-user-error").hide(300);
+            //TODO: Llamar al WS de cambio de password
+        }else{
+            $("#create-user-error").show(300);
+        }
+    });
 
     $("#reset-password").click(function() {
         var est1 = password_validation.check_confirmation_match();
@@ -154,11 +194,12 @@ var password_validation= {
                     {
                         re: /password|12345678|87654321|1234|4321|qwer[tu]|asdf[gj]|zxcv[bnm]/i,
                         score : -20
-                    },
-                  /* threeNumbers */ {
+                    }/*,
+                   {
                         re: /(.*[111])|(.*[222])|(.*[333])|(.*[444])|(.*[555])|(.*[666])|(.*[777])|(.*[888])|(.*[999])|(.*[000])/,
                         score: -7
                     }
+                */
                 ];
 
             var score = 0;
@@ -176,7 +217,7 @@ var password_validation= {
             $.each(checks, function(key,value){
                 pass.match(value.re) && (score += value.score);
             });
-
+            console.info(score);
             // bonus for length per char
             score && (score += len);
             if(score<10)
