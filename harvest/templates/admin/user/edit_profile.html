@@ -2,15 +2,21 @@
 
 {% block style_css %}
     <link rel="stylesheet" href="{{STATIC_URL}}chosen_v1.1.0/chosen.css">
+    <link rel="stylesheet" href="{{STATIC_URL}}image-picker/image-picker.css">
 {% endblock %}
 
 
 {% block javascript %}
     <script src='{{STATIC_URL}}js/user-admin.js'></script>
     <script src="{{STATIC_URL}}chosen_v1.1.0/chosen.jquery.js" type="text/javascript"></script>
-
+    <script src="{{STATIC_URL}}image-picker/image-picker.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         $('.chosen-select').chosen();
+
+        jQuery("select.image-picker").imagepicker({
+		hide_select : true,
+          show_label  : true
+    });
     </script>
 {% endblock %}
 

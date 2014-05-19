@@ -1,12 +1,83 @@
 {% extends 'general/base.html' %}
 
+{% block javascript %}
+    <script src='{{STATIC_URL}}js/user-report.js'></script>
+{% endblock %}
+
 {% block titulo %}
 Reports
 {% endblock %}
 
-{% block content %}
-    <h1>User Report</h1>
-    {{ request.path }}
+{% block sub-menu %}
+    {% include "general/submenu_reports.html" %}
 {% endblock %}
 
-{% block sub-menu %}{% include "general/submenu_reports.html" %}{% endblock %}
+
+{% block content %}
+
+<div class="row"/>
+    <div class="col-xs-8 title-block">
+        <h3>Sergio's Task:</h3>
+    </div>
+</div>
+
+<div class="row date-filter border"/>
+    <div class="col-xs-12">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <label for="fromDate">From:</label>
+            <input type="date" class="form-control" id="fromDate">
+          </div>
+          <div class="form-group">
+            <label for="toDate">To:</label>
+            <input type="date" class="form-control" id="toDate">
+          </div>
+          <div class="form-group">
+            <label for="project">Project:</label>
+            <input type="text" class="form-control" id="project" placeholder="All">
+          </div>
+          <div class="form-group">
+            <a href="#" class="btn btn-success">Filter</a>
+          </div>
+        </form>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px"/>
+    <div class="col-xs-12">
+        <ul class="manage-list">
+            <li>
+                <div class="head">
+                <p>Task (2)</p>
+                <p style="float: right;"><strong>Total:</strong> 13hs</p>
+                </div>
+            </li>
+            <li>
+              <div id="1234" class="manage-list-item col">
+                <div class="col-xs-10 col-md-11 left">
+                  <h3>Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu</h3>
+                  <p>Al watan - Design - 12/10/2014</p>
+                </div>
+                <div class="col-xs-2 col-md-1 right">
+                  <h3>9hs</h3>
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div id="1234" class="manage-list-item col">
+                <div class="col-xs-10 col-md-11 left">
+                  <h3>Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu</h3>
+                  <p>Al watan - Developer - 12/10/2014</p>
+                </div>
+                <div class="col-xs-2 col-md-1 right">
+                  <h3>9hs</h3>
+                </div>
+              </div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+{% endblock %}

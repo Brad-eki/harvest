@@ -12,7 +12,7 @@
    Changes to your profile were saved.
 </div>
 
-<form class="form-horizontal" role="form">
+<form class="form-horizontal content_profile" role="form">
 
   <div class="form-group">
     <label class="col-sm-2 control-label">Username (*)</label>
@@ -45,8 +45,32 @@
   <div class="form-group">
     <label class="col-sm-2 control-label">Photo</label>
     <div class="col-sm-7">
-      <input type="file" id="photo" class="input-photo">
-    <p class="help-block">Suggested size: 100x100</p>
+        <input type="file" id="photo" class="input-photo">
+        <p class="help-block">Suggested size: 100x100</p>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label"></label>
+    <div class="col-sm-7">
+          <div class="picker">
+               <select class="image-picker show-html">
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar01.png' value='1'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar02.png' value='2'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar03.png' value='3'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar04.png' value='4'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar05.png' value='5'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar06.png' value='6'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar07.png' value='7'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar08.png' value='8'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar09.png' value='9'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar10.png' value='10'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar11.png' value='11'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar12.png' value='12'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar13.png' value='13'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar14.png' value='14'></option>
+              </select>
+          </div>
     </div>
   </div>
 

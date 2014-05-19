@@ -1,16 +1,114 @@
 {% extends 'general/base.html' %}
 
+{% block javascript %}
+    <script src='{{STATIC_URL}}js/project-report.js'></script>
+{% endblock %}
 
 {% block titulo %}
 Reports
 {% endblock %}
 
-{% block content %}
-    <h1>Project Report</h1>
-    {{ request.path }}
-{% endblock %}
-
 
 {% block sub-menu %}
     {% include "general/submenu_reports.html" %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row"/>
+    <div class="col-xs-12 title-block">
+        <h3>Al watan</h3>
+    </div>
+</div>
+
+<div class="row date-filter border"/>
+    <div class="col-xs-12">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <label for="fromDate">From:</label>
+            <input type="date" class="form-control" id="fromDate">
+          </div>
+          <div class="form-group">
+            <label for="toDate">To:</label>
+            <input type="date" class="form-control" id="toDate">
+          </div>
+          <button type="submit" class="btn btn-success">Filter</button>
+        </form>
+    </div>
+</div>
+<div class="row" style="margin-top: 20px">
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered table-report">
+        <thead style="background-color: #eaeaea">
+          <tr>
+            <th class="first-td">User</th>
+            <th>Development</th>
+            <th>Design</th>
+            <th>Bug Fix</th>
+            <th>Rework</th>
+            <th>Client Support</th>
+            <th>Management</th>
+            <th>Testing</th>
+            <th>Research</th>
+            <th>No Aplica</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="first-td">Sergio Cirasa</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+            <td class="last-td">10</td>
+          </tr>
+          <tr>
+            <td class="first-td">Sergio Cirasa</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+            <td class="last-td">10</td>
+          </tr>
+          <tr class="tr-gray">
+            <td class="first-td">Total</td>
+            <td>11</td>
+            <td>21</td>
+            <td>31</td>
+            <td>31</td>
+            <td>21</td>
+            <td>11</td>
+            <td>31</td>
+            <td>21</td>
+            <td>11</td>
+            <td class="last-td">40</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 20px">
+    <div class="col-xs-6">
+      <h3>Task</h3>
+      <div class="chart_div1"></div>
+    </div><!--/span-->
+    <div class="col-xs-6">
+      <h3>Users</h3>
+      <div class="chart_div2"></div>
+    </div><!--/span-->
+</div>
+
 {% endblock %}

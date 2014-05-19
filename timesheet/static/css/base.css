@@ -334,6 +334,44 @@ code {
 /** Change Password
 -------------------------------------------------- */
 
+.table-report{
+    font-size: 13px;
+}
+
+.table-report th,
+.table-report tr{
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table-report thead{
+    background-color: #eaeaea;
+}
+
+.tr-gray{
+    background-color: #fff3ec;
+    font-weight: bold;
+}
+
+.last-td{
+    background-color: #fff3ec;
+    font-weight: bold;
+}
+.first-td{
+    background-color: #eaeaea;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.date-filter{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 15px 0;
+}
+.date-filter input{
+    margin-right: 15px;
+}
+
 .border{
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
@@ -507,8 +545,9 @@ code {
 
 .manage-list {
 	border-top:1px solid #d5d5d5;
-	margin:15px 0 0 0;
     padding: 0;
+    border-top:none;
+    margin: 5px 0 0 0;
 }
 .manage-list li {
 	border-bottom:1px solid #d5d5d5;
@@ -525,6 +564,21 @@ code {
 
 .manage-list li>h2{
     margin: 0;
+}
+
+.manage-list .head{
+    background: #ddd;
+    border-top: 1px solid #d5d5d5;
+}
+
+.manage-list .head p{
+    display: inline-block;
+    color: #333;
+    font-weight: 500;
+    font-size: 13px;
+    padding:5px 10px;
+    margin: 0;
+    line-height: 1.1;
 }
 
 .manage-list-header {
@@ -577,8 +631,13 @@ code {
 	color:#888;
 	font-size:11px;
 	line-height:1.4em;
-	margin:0;
+	margin:1px 0 1px 0;
 	padding:0
+}
+
+.disabled-hightlight:hover {
+	background:#FFF;
+	cursor:default;
 }
 
 .reactivate-link {
@@ -586,3 +645,248 @@ code {
 	background:url(https://cache.harvestapp.com/assets/icon-re-activate-217c0cbbce272a3c18b7ca0e956cda58.gif) no-repeat 0 center;
 	padding-left:21px
 }
+
+.col{
+    margin-right: 0px;
+    margin-left: 0px;
+}
+.col:before,
+.col:after{
+  display: table;
+  content: " ";
+}
+
+.col:after{
+  clear: both;
+}
+
+.col .left{
+    display: inline-block;
+    margin-left: -15px;
+}
+
+.col .right{
+    text-align: center;
+    margin-left: 15px;
+}
+
+.col .right h3{
+    font-size: 18px;
+}
+
+.manage-list-item .right-block h3 {
+	display:inline;
+    line-height: normal;
+    -webkit-font-smoothing:antialiased;
+    font-weight:bold;
+    vertical-align: middle;
+    font-size: 22px;
+}
+
+.manage-list-item .right-block button {
+	margin-left: 10px;
+    color: #797979;
+    padding: 6px 6px;
+    vertical-align: inherit;
+    font-size: 14px;
+}
+
+.manage-list-item .left-block h3 {
+	display:inline;
+    line-height: normal;
+    -webkit-font-smoothing:antialiased;
+    font-weight:bold;
+    font-size: 15px;
+}
+
+.manage-list-item .left-block p{
+font-size: 12px;
+}
+
+.manage-list-item .right-block{
+    float: right;
+    line-height: 38px;
+}
+
+
+
+/** Button tooggle
+-------------------------------------------------- */
+.week{
+   margin-left: 4px;
+   width: 100%;
+}
+.week label{
+    height: 46px;
+    width: 11%;
+    color: #666;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.week .last{
+    width: 23%;
+    line-height: 2.428571;
+    background-color: #e0e0e0;
+}
+
+.btn.active {
+background-image: none;
+outline: 0;
+-webkit-box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0);
+box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0);
+}
+
+/** Timesheet
+-------------------------------------------------- */
+
+.title-date{
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.title-date span{
+    font-weight: normal;
+    color:#999;
+    -webkit-font-smoothing: antialiased;
+}
+
+.date-menu{
+    float: right;
+    margin-right: 7px;
+}
+
+.new-entry-label{
+    color: #aaa;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 30px;
+    text-align: center;
+    text-shadow: none;
+    white-space: nowrap;
+    width: 59px;
+}
+/** Modal
+-------------------------------------------------- */
+.modal-dialog{
+    width: 500px;
+}
+
+.modal-dialog .modal-header{
+    background-color: #eaeaea;
+    padding: 0px;
+}
+
+.modal-dialog .modal-title{
+    color: #555;
+    font-size: 15px;
+    line-height: 35px;
+    text-align: center;
+    text-shadow: 0 1px 0 #fff;
+    -webkit-font-smoothing: antialiased;"
+}
+
+.modal-dialog .modal-title span{
+    color: #777;
+    font-size: 13px;
+    font-weight: normal;
+    padding-right: 20px;
+    position: absolute;
+    right: 0;
+}
+
+.modal-dialog .modal-body{
+    padding: 12px 20px;
+}
+.modal-dialog2 h4{
+    color: #666;
+    display: inline-block;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.modal-dialog .form-group .modal-title{
+    color: #666;
+    display: inline-block;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.modal-dialog .form-group select{
+    height: 30px;
+}
+
+.modal-dialog .form-group textarea{
+    overflow: hidden;
+    word-wrap: break-word;
+    resize: none;
+    height: 60px;
+    line-height: 20px;
+    display: inline;
+    width: 75%;
+    font-size: 15px;
+    color: #555;
+}
+
+.modal-dialog .form-group input{
+    overflow: hidden;
+    word-wrap: break-word;
+    resize: none;
+    height: 60px;
+    float:right;
+    width: 22%;
+    font-size: 30px;
+    font-weight: 500;
+    height: 56px;
+    line-height: 38px;
+    padding-left: 0;
+    text-align: right;
+    -webkit-font-smoothing: antialiased;
+}
+
+.modal-dialog .modal-footer{
+    margin-top: 0px;
+    padding: 10px 20px 10px;
+}
+
+/** signin
+-------------------------------------------------- */
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/** Home
+-------------------------------------------------- */

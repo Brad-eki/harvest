@@ -1,16 +1,59 @@
 {% extends 'general/base.html' %}
 
+{% block javascript %}
+    <script src='{{STATIC_URL}}js/project-report.js'></script>
+{% endblock %}
 
 {% block titulo %}
 Reports
 {% endblock %}
 
-{% block content %}
-    <h1>Reports Project list</h1>
-    {{ request.path }}
+{% block sub-menu %}
+    {% include "general/submenu_reports.html" %}
 {% endblock %}
 
 
-{% block sub-menu %}
-    {% include "general/submenu_reports.html" %}
+{% block content %}
+
+<div class="row"/>
+    <div class="col-xs-8 title-block">
+        <h3>Projects:</h3>
+    </div>
+    <div class="col-xs-4">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search by project">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px"/>
+    <div class="col-xs-12">
+        <ul class="manage-list">
+            <li>
+                <h2 class="manage-list-header">Projects (2)</h2>
+            </li>
+
+            <li>
+              <div id="1234" class="manage-list-item project">
+                <div style="display: inline-block;">
+                  <h3>Sovanta</h3>
+                  <p>Android</p>
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div id="1234" class="manage-list-item project">
+                <div style="display: inline-block;">
+                  <h3>Sovanta</h3>
+                  <p>Android</p>
+                </div>
+              </div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
 {% endblock %}

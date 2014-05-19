@@ -8,7 +8,7 @@
   <link rel='stylesheet' href='{{STATIC_URL}}bootstrap-3.1.1/css/bootstrap.css'>
   <link rel='stylesheet' href='{{STATIC_URL}}css/base.css'>
   {% block style_css %}{% endblock %}
-
+  {% block top-javascript %}{% endblock %}
 </head>
 
   <body>
@@ -43,7 +43,7 @@
                   <ul class="dropdown-menu">
                     <li><div class="user-information"><strong>Sergio Cirasa</strong></div></li>
                     <li class="divider"></li>
-                    <li><a href="/user/edit/">My Profile</a></li>
+                    <li><a href="/manage/user/edit/">My Profile</a></li>
                     <li><a href="/reports/users/">My Time Report</a></li>
                     <li><a href="/login/">Sign Out</a></li>
                   </ul>

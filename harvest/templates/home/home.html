@@ -11,8 +11,76 @@
 {% block titulo %}Home{% endblock %}
 
 {% block content %}
-    <h1>home</h1>
-    {{ request.path }}
+
+        <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-12">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <div class="jumbotron">
+            <h1>Time Summary!</h1>
+            <p>This is an example to show the potential of an offcanvas layout pattern in Bootstrap. Try some responsive-range viewport sizes to see it in action.</p>
+          </div>
+          <div class="row">
+            <div class="col-6 col-sm-6 col-lg-4">
+
+               <h2>Time Summary</h2>
+  <table cellpadding="0" cellspacing="0" id="tbl-timesummary" class="tbl tbl-timesummary">
+    <tr>
+      <td class="big_link">
+        <a href="/reports/users/664714?from=20140519&amp;kind=custom&amp;till=20140519">
+          <span class="type-smallgrey">Hours Today</span>
+          <span class="type-largehours">0.00</span>
+</a>      </td>
+      <td class="tbl-leftborder big_link">
+        <a href="/reports/users/664714?from=20140518&amp;kind=custom&amp;till=20140518">
+          <span class="type-smallgrey">Hours Yesterday</span>
+          <span class="type-largehours">0.00</span>
+</a>      </td>
+    </tr>
+    <tr>
+      <td class="big_link">
+        <a href="/reports/users/664714?from=20140519&amp;kind=week&amp;till=20140525">
+          <span class="type-smallgrey">Hours This Week</span>
+          <span class="type-largehours">0.00</span>
+</a>      </td>
+      <td class="tbl-leftborder big_link">
+        <a href="/reports/users/664714?from=20140512&amp;kind=week&amp;till=20140518">
+          <span class="type-smallgrey">Hours Last Week</span>
+          <span class="type-largehours">40.23</span>
+</a>      </td>
+    </tr>
+    <tr>
+      <td class="big_link">
+        <a href="/reports/users/664714?from=20140501&amp;kind=month&amp;till=20140531">
+          <span class="type-smallgrey">Hours This Month</span>
+          <span class="type-largehours">84.19</span>
+</a>      </td>
+      <td class="tbl-bottomborder tbl-leftborder big_link">
+        <a href="/reports/users/664714?from=20140401&amp;kind=month&amp;till=20140430">
+          <span class="type-smallgrey">Hours Last Month</span>
+          <span class="type-largehours">118.24</span>
+</a>      </td>
+    </tr>
+  </table>
+            </div><!--/span-->
+
+
+            <div class="col-6 col-sm-6 col-lg-4">
+              <h2>Heading</h2>
+              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            </div><!--/span-->
+
+
+          </div><!--/row-->
+        </div><!--/span-->
+
+      </div><!--/row-->
+
+
+
 {% endblock %}
 
 
