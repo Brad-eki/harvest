@@ -2,17 +2,38 @@
  * Created by sergio on 27/03/14.
  */
 
-$(function () {
+function archiveUser(userId, archive){
+    $("#"+userId).remove();
+
+    var count = $(".manage-list").children().length - 1;
+    if(count>0)
+        $("#users-count").text("Users ("+count+")");
+    else $("#users-count").text("Users (0)");
+
+    $.ajax({
+        url : '/manage/users/archive/'+userId+"?archive="+archive,
+        data : {},
+        type : 'GET',
+        dataType : 'json',
+        success : function(json) {
+
+        },
+        error : function(jqXHR, status, error) {
+           alert("error: "+error);
+        },
+        complete : function(jqXHR, status) {
+        }
+    });
+
+    return false;
+}
+
 
     $(".user").click(function(){
-        window.location="/manage/user/edit/"+$(this).attr('id');
-
+       window.location="/manage/user/edit/"+$(this).attr('id');
     });
 
-    $(".archived").click(function(){
-        $(this).remove();
-        //TODO: llamar al WS
-    });
+
 
     $("#assign-rojects").click(function(){
         var array = $(".chosen-select").val();
@@ -45,6 +66,7 @@ $(function () {
     }
 
     $("#navigation_profile_projects").click(function(){
+        $(".chosen-container").css("width","100%");
         $(".menu-items li").removeClass("selected");
         $(this).addClass("selected");
         $("#content_profile_projects").fadeIn(300);
@@ -77,7 +99,12 @@ $(function () {
         notifyIfPasswordsMach();
     });
 
-    $("#create-user").click(function() {
+    function isEmail(email) {
+      var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      return regex.test(email);
+    }
+
+    function validatePassword(){
         var est1 = password_validation.check_confirmation_match();
         var est2 = password_validation.check_length();
 
@@ -89,25 +116,37 @@ $(function () {
             $("#confirm-password-form").removeClass("has-error");
         }
 
-        if($("#username").val().length<=0){
+        if(est1 && est2)
+            return true;
+        else return false;
+    }
+
+    function validateCreateUserForm(shouldValidatePassword) {
+        var passwordValid = true;
+
+        if(shouldValidatePassword)
+            passwordValid = validatePassword();
+
+        if($("#username").val().length<=3){
             $("#username-form").addClass("has-error");
         }else{
             $("#username-form").removeClass("has-error");
         }
 
-        if($("#email").val().length<=0){
+        if($("#email").val().length<=0 || !isEmail($("#email").val())){
             $("#email-form").addClass("has-error");
         }else{
             $("#email-form").removeClass("has-error");
         }
 
-        if(est1 && est2 && $("#username").val().length>0 && $("#email").val().length>0){
+        if(passwordValid && $("#username").val().length>0 && $("#email").val().length>0){
             $("#create-user-error").hide(300);
-            //TODO: Llamar al WS de cambio de password
+            return true;
         }else{
             $("#create-user-error").show(300);
+            return false;
         }
-    });
+    };
 
     $("#reset-password").click(function() {
         var est1 = password_validation.check_confirmation_match();
@@ -130,7 +169,24 @@ $(function () {
         $("#alert-password-success").hide(300);
     });
 
+
+$('#photo').change(function (){
+        $('.thumbnail').removeClass('selected');
+        $('.image-picker :selected').val("");
+        $('.image-picker').find(":selected").prop('selected', false);
+
+    /*
+    $('.image-picker').find(":selected").prop('selected', false);
+jQuery("select.image-picker").imagepicker({
+		    hide_select : true,
+            show_label  : true,
+            clicked:function(){
+                $('#photo').val(null);
+            }
+        });
+*/
 });
+
 
 
 var password_validation= {

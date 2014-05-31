@@ -27,28 +27,19 @@ Archived Projects
     <div class="col-xs-12">
         <ul id="archived-projects" class="manage-list">
             <li>
-                <h2 class="manage-list-header">Projects (2)</h2>
+                <h2 id="projects-count" class="manage-list-header">Projects ({{ projects|length }})</h2>
             </li>
-
-            <li class="archived">
-              <div id="1" class="manage-list-item">
-                <a href="#" class="reactivate-link"></a>
+            {% for project in projects %}
+            <li id="{{ project.id }}" class="archived">
+              <div class="manage-list-item">
+                <a href="javascript:archiveProject({{ project.id }},'False')" class="reactivate-link"></a>
                 <div style="display: inline-block;">
-                  <h3>Al watan</h3>
-                  <p>Android</p>
+                  <h3>{{ project.name|title }} {% if project.client %} - {{ project.client|title }}{% endif %}</h3>
+                  <p>{{ project.type }}</p>
                 </div>
               </div>
             </li>
-
-            <li class="archived">
-              <div id="2" class="manage-list-item">
-                <a href="#" class="reactivate-link"></a>
-                <div style="display: inline-block;">
-                  <h3>Ky two</h3>
-                  <p>iPhone</p>
-                </div>
-              </div>
-            </li>
+            {% endfor %}
 
         </ul>
 

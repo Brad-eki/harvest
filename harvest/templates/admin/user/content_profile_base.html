@@ -2,50 +2,52 @@
 <h3>Your Basic Info</h3>
 </div>
 
-<div id="edit-profile-error" class="alert alert-danger" style="display: none;">
+<div id="create-user-error" class="alert alert-danger" style="display:{% if profileChangedSuccesful == 0 %}block;{% else %}none;{% endif %}">
     <span class="glyphicon glyphicon-remove form-control-feedback"></span>
     Oops! You’ve got some things to fix.
+    {{ error|default:"" }}
 </div>
 
-<div id="edit-profile-success"class="alert alert-warning alert-success" style="display: none">
+<div id="edit-profile-success"class="alert alert-warning alert-success" style="display: {% if profileChangedSuccesful == 1 %}block;{% else %}none;{% endif %}">
   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
    Changes to your profile were saved.
 </div>
 
-<form class="form-horizontal content_profile" role="form">
-
-  <div class="form-group">
+<form action="." class="form-horizontal content_profile" role="form" enctype="multipart/form-data" method='POST' onsubmit="return validateCreateUserForm(false)" autocomplete="off">{% csrf_token %}
+  <input name="submenu" type="hidden" value="profile_base">
+  <input name="id" type="hidden" value="{{ form.id.value }}">
+  <div id="username-form" class="form-group {% if form.username.errors %}has-error{% endif %}">
     <label class="col-sm-2 control-label">Username (*)</label>
     <div class="col-sm-7">
-      <input type="text" id="username" class="form-control">
+      <input type="text" id="username" name="username" class="form-control" value="{{ form.username.value|default:"" }}">
     </div>
   </div>
 
   <div class="form-group">
     <label class="col-sm-2 control-label">First Name</label>
     <div class="col-sm-7">
-      <input type="text" id="firstname" class="form-control">
+      <input type="text" id="first_name" name="first_name" class="form-control" value="{{ form.first_name.value|default:"" }}">
     </div>
   </div>
 
   <div class="form-group">
     <label class="col-sm-2 control-label">Last Name</label>
     <div class="col-sm-7">
-      <input type="text" id="lastname" class="form-control">
+      <input type="text" id="last_name" name="last_name" class="form-control" value="{{ form.last_name.value|default:"" }}">
     </div>
   </div>
 
-  <div class="form-group">
+  <div id="email-form" class="form-group {% if form.email.errors %}has-error{% endif %}">
     <label class="col-sm-2 control-label">Email (*)</label>
     <div class="col-sm-7">
-      <input type="text" id="email" class="form-control">
+      <input type="text" id="email" name="email" class="form-control" value="{{ form.email.value|default:"" }}">
     </div>
   </div>
 
   <div class="form-group">
     <label class="col-sm-2 control-label">Photo</label>
     <div class="col-sm-7">
-        <input type="file" id="photo" class="input-photo">
+        <input type="file" id="photo" name="thumbnail" class="input-photo">
         <p class="help-block">Suggested size: 100x100</p>
     </div>
   </div>
@@ -54,16 +56,17 @@
     <label class="col-sm-2 control-label"></label>
     <div class="col-sm-7">
           <div class="picker">
-               <select class="image-picker show-html">
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar01.png' value='1'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar02.png' value='2'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar03.png' value='3'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar04.png' value='4'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar05.png' value='5'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar06.png' value='6'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar07.png' value='7'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar08.png' value='8'></option>
-                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar09.png' value='9'></option>
+               <select class="image-picker show-html" name="photoId">
+                  <option value=''></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar01.png' value='01'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar02.png' value='02'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar03.png' value='03'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar04.png' value='04'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar05.png' value='05'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar06.png' value='06'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar07.png' value='07'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar08.png' value='08'></option>
+                  <option data-img-src='{{STATIC_URL}}img/avatar/avatar09.png' value='09'></option>
                   <option data-img-src='{{STATIC_URL}}img/avatar/avatar10.png' value='10'></option>
                   <option data-img-src='{{STATIC_URL}}img/avatar/avatar11.png' value='11'></option>
                   <option data-img-src='{{STATIC_URL}}img/avatar/avatar12.png' value='12'></option>
@@ -78,14 +81,7 @@
     <div class="col-sm-offset-2 col-sm-2">
       <div class="checkbox">
         <label>
-          <input id="is_admin" type="checkbox"> Is Admin
-        </label>
-      </div>
-    </div>
-    <div class="col-sm-2">
-      <div class="checkbox">
-        <label>
-          <input id="is_active" type="checkbox"> Is Active
+            <input id="is_admin" name="is_staff" type="checkbox" {% if form.is_staff.value %}checked{% endif %}> Is Admin
         </label>
       </div>
     </div>
@@ -93,8 +89,8 @@
 
   <div  class="form-group">
         <div class="col-sm-offset-2 col-sm-9 form-buttons">
-            <a href="#save" id="save-profile" type="submit" class="btn btn-success">Save</a>
-            <a href="/manage/users/" id="cancel-profile" type="submit" class="btn btn-default">Cancel</a>
+            <input type="submit" id="save-profile" class="btn btn-success" value="Save"/>
+            <a href="." id="cancel-profile" type="submit" class="btn btn-default">Cancel</a>
             <div id="edit-profile-loading" class="loader" style="display: none">
                 Loading...
             </div>

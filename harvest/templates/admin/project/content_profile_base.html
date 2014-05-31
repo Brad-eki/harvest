@@ -7,58 +7,65 @@
 <div class="row"/>
     <div class="col-xs-12 content_profile">
 
-        <div id="edit-project-error" class="alert alert-danger" style="display: none;">
+        <div id="project-error" class="alert alert-danger" style="display: {% if form.errors %}block;{% else %}none;{% endif %}">
             <span class="glyphicon glyphicon-remove form-control-feedback"></span>
             Oops! You’ve got some things to fix.
+            {{ form.errors|default:"" }}
         </div>
 
-        <form class="form-horizontal" role="form">
+        <div id="edit-profile-success"class="alert alert-warning alert-success" style="display: {% if profileChangedSuccesful == 1 %}block;{% else %}none;{% endif %}">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            Changes to your project were saved.
+        </div>
 
-          <div id="form-project-name" class="form-group">
+        <form id="form" class="form-horizontal" role="form" method='POST' onsubmit="return validateProjectForm()" autocomplete="off">{% csrf_token %}
+          <input type="hidden" name="submenu" value="project_profile">
+          <input type="hidden" name="id" value="{{ form.id.value|default:"" }}">
+
+            <div id="form-project-name" class="form-group {% if form.name.errors %}has-error{% endif %}">
             <label class="col-sm-3 control-label">Project Name (*)</label>
             <div class="col-sm-7">
-              <input type="text" id="project-name" class="form-control">
+              <input type="text" id="project-name" name="name" class="form-control" value="{{ form.name.value|default:"" }}">
             </div>
           </div>
 
-          <div id="form-project-type" class="form-group">
+          <div id="form-project-client" class="form-group {% if form.client.errors %}has-error{% endif %}">
+            <label class="col-sm-3 control-label">Client</label>
+            <div class="col-sm-7">
+              <input type="text" id="project-client" name="client" class="form-control" value="{{ form.client.value|default:"" }}">
+            </div>
+          </div>
+
+          <div id="form-project-type" class="form-group {% if form.type.errors %}has-error{% endif %}">
             <label class="col-sm-3 control-label">Type of Project (*)</label>
             <div class="col-sm-7">
-              <select id="project-type" class="form-control">
-                  <option value="Android">Android</option>
-                  <option value="Backend/WS">Backend/WS</option>
-                  <option value="Blackberry">Blackberry</option>
-                  <option value="Flash">Flash</option>
-                  <option value="iPad">iPad</option>
-                  <option value="iPhone">iPhone</option>
-                  <option value="iPhone/iPad">iPhone/iPad</option>
-                  <option value=".Net">.Net</option>
-                  <option value="Web">Web</option>
-                  <option value="Other">Other</option>
+              <select id="project-type" name="type" class="form-control" >
+                  <option value=""></option>
+                  <option value="Android" {% if form.type.value == "Android" %}selected{% endif %}>Android</option>
+                  <option value="Backend/WS" {% if form.type.value == "Backend/WS" %}selected{% endif %}>Backend/WS</option>
+                  <option value="Blackberry" {% if form.type.value == "Blackberry" %}selected{% endif %}>Blackberry</option>
+                  <option value="Flash" {% if form.type.value == "Flash" %}selected{% endif %}>Flash</option>
+                  <option value="iPad" {% if form.type.value == "iPad" %}selected{% endif %}>iPad</option>
+                  <option value="iPhone" {% if form.type.value == "iPhone" %}selected{% endif %}>iPhone</option>
+                  <option value="iPhone/iPad" {% if form.type.value == "iPhone/iPad" %}selected{% endif %}>iPhone/iPad</option>
+                  <option value=".Net" {% if form.type.value == ".Net" %}selected{% endif %}>.Net</option>
+                  <option value="Web" {% if form.type.value == "Web" %}selected{% endif %}>Web</option>
+                  <option value="Other" {% if form.type.value == "Other" %}selected{% endif %}>Other</option>
                </select>
             </div>
           </div>
 
-          <div class="form-group">
+          <div id="form-estimated_hours" class="form-group {% if form.estimated_hours.errors %}has-error{% endif %}">
             <label class="col-sm-3 control-label">Estimated Hours</label>
             <div class="col-sm-7">
-              <input type="text" id="estimated-hours" class="form-control">
+              <input type="text" id="estimated-hours" name="estimated_hours" class="form-control" value="{{ form.estimated_hours.value|default:"" }}">
             </div>
           </div>
 
-          <div class="form-group border">
-          <div class="col-sm-offset-3 col-sm-7">
-              <div class="checkbox">
-                <label>
-                  <input id="is_active" type="checkbox"> Is Active
-                </label>
-              </div>
-          </div>
-          </div>
 
           <div  class="form-group">
                 <div class="col-sm-offset-3 col-sm-9 form-buttons">
-                    <a href="#" id="edit-project" class="btn btn-success">Save</a>
+                    <input type="submit" id="edit-project" class="btn btn-success" value="Save"/>
                     <a href="/manage/projects/" id="cancel-profile" type="submit" class="btn btn-default">Cancel</a>
                 </div>
           </div>

@@ -62,7 +62,7 @@ code {
 /* * navbar for nav
 -------------------------------------------------- */
 .navbar-default {
-	background-color:#1496c8;
+	background-color:#0073b7 /*#1496c8*/;
 	box-shadow:0 1px 5px rgba(0,0,0,0.2);
 	position:relative;
 	width:100%;
@@ -71,6 +71,7 @@ code {
 	margin:0;
 	padding:0;
 }
+/*
 .navbar-default:before {
 	background:-moz-linear-gradient(top,rgba(255,255,255,0.2),rgba(255,255,255,0));
 	background:-o-linear-gradient(top,rgba(255,255,255,0.2),rgba(255,255,255,0));
@@ -85,6 +86,7 @@ code {
 	top:0;
 	width:100%;
 }
+*/
 .navbar-default .navbar-collapse,.navbar-default .navbar-form {
 	border-color:rgba(11,105,145,1.0);
 }
@@ -103,9 +105,9 @@ code {
 }
 .navbar-default .navbar-nav>.active>a,.navbar-default .navbar-nav>.active>a:hover,.navbar-default .navbar-nav>.active>a:focus {
 	color:#FFF;
-	background-color:#0f87b9;
-	background:rgba(15,135,185,1.0);
-	box-shadow:inset 0 2px 6px rgba(0,0,0,0.3);
+	background-color:#1984C3;
+	background: rgb(25, 132, 195);
+	box-shadow:inset 0 2px 6px rgba(0,0,0,0.1);
 	opacity:1;
 }
 .navbar-default .navbar-nav>.open>a,.navbar-default .navbar-nav>.open>a:hover,.navbar-default .navbar-nav>.open>a:focus,.navbar-default .navbar-nav>li>a:hover,.navbar-default .navbar-nav>li>a:focus {
@@ -151,9 +153,9 @@ code {
 }
 .navbar-default .nav-user>.open>a,.navbar-default .nav-user>.open>a:hover,.navbar-default .nav-user>.open>a:focus,.navbar-default .nav-user>li>a:hover,.navbar-default .nav-user>li>a:focus {
 	color:#FFF;
-	background-color:#0f87b9;
-	background:rgba(15,135,185,1.0);
-	box-shadow:inset 0 2px 6px rgba(0,0,0,0.3);
+    background-color:#1984C3;
+	background: rgb(25, 132, 195);
+	box-shadow:inset 0 2px 6px rgba(0,0,0,0.1);
 	opacity:1;
 }
 .navbar-default .nav-user>li>a:hover,.navbar-default .nav-user>li>a:focus {
@@ -396,6 +398,10 @@ code {
     font-weight: bold;
 }
 
+.content_profile{
+    margin-top: 10px;
+}
+
 .content_profile .checkbox{
     padding-top:15px;
     padding-bottom:15px;
@@ -432,9 +438,10 @@ code {
     line-height: 28px;
 }
 
+.chosen-container,
 #content_profile_users .chosen-select,
 #content_profile_projects .chosen-select{
-    width: 100%;
+    width: 100% !important;
 }
 
 #assign-rojects-loading{

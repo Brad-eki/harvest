@@ -1,4 +1,5 @@
 {% extends 'general/base.html' %}
+{% load extra_tags %}
 
 {% block style_css %}
     <link rel="stylesheet" href="{{STATIC_URL}}chosen_v1.1.0/chosen.css">
@@ -29,30 +30,31 @@ Edit Project
         <div class="side-menu">
             <div class="user-profile">
                 <div class="profile-image">
-                    <img alt="Android" class="staff-img" src="{{STATIC_URL}}img/type/Android.png">
+                    <img alt="Android" class="staff-img" src="{{STATIC_URL}}img/type/{{ form.type.value|clean_str|default:"Other" }}.png">
                 </div>
                 <div class="profile-name">
-                    <h2>Al watan</h2>
-                    <span class="label label-success">Android</span>
+                    <h2>{{ form.name.value|title|default:"" }}</h2>
+                    <span class="label label-success">{{ form.type.value|default:"Other" }}</span>
                 </div>
             </div>
+
             <div class="menu-items">
                 <ul class="clear">
-                    <li id="navigation_profile_users" class="selected">
-                        <a href="#profile_projects">Team</a>
+                    <li id="navigation_profile_users" {% if submenu == None or submenu == "project_team" %}class="selected"{% endif %}>
+                        <a href="#project_team">Team</a>
                     </li>
-                    <li id="navigation_profile_base">
-                        <a href="#profile_base">Project Info</a>
+                    <li id="navigation_profile_base" {% if submenu and submenu == "project_profile" %}class="selected"{% endif %}>
+                        <a href="#project_profile">Project Info</a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="col-xs-9" style="min-height: 200px">
-        <div id="content_profile_users">
+        <div id="content_profile_users" {% if submenu == None or submenu == "project_team" %}style="display:block;"{% else %}style="display:none;"{% endif %}>
             {% include "admin/project/content_profile_users.html" %}
         </div>
-        <div id="content_profile_base" style="display:none;">
+        <div id="content_profile_base" {% if submenu == "project_profile" %}style="display:block;"{% else %}style="display:none;"{% endif %}>
             {% include "admin/project/content_profile_base.html" %}
         </div>
     </div>

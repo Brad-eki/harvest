@@ -20,12 +20,15 @@ Manage Projects
         <h3>Manage Projects</h3>
     </div>
     <div class="col-xs-4">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search by project">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-        </div>
+        <form action="/manage/projects/" method="get">
+            <div class="input-group">
+              <input id="search" name="search" type="text" class="form-control" placeholder="Search by project" value="{% if search %}{{ search }}{% endif %}">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+            </div>
+        </form>
     </div>
 </div>
+
 
 <div class="row" style="margin-top: 10px"/>
     <div class="col-xs-6">
@@ -42,34 +45,24 @@ Manage Projects
     <div class="col-xs-12">
         <ul class="manage-list">
             <li>
-                <h2 class="manage-list-header">Projects (2)</h2>
+                <h2 id="projects-count" class="manage-list-header">Projects ({{ projects|length }})</h2>
             </li>
 
-            <li>
-              <div id="1234" class="manage-list-item user">
+            {% for project in projects %}
+            <li id="{{ project.id }}" class="project">
+              <div class="manage-list-item">
                 <a href="/manage/projects/edit/1" class="btn btn-info left-button">Edit</a>
                 <div style="display: inline-block;">
-                  <h3>Sovanta</h3>
-                  <p>Android</p>
+                  <h3>{{ project.name|title }} {% if project.client %} - {{ project.client|title }}{% endif %}</h3>
+                  <p>{{ project.type }}</p>
                 </div>
                 <div class="secondary-buttons">
-                  <a href="#" class="btn btn-warning right-button">Archive</a>
+                  <button onclick="javascript:archiveProject({{ project.id }},'True')" class="btn btn-warning right-button archived">Archive</button>
                 </div>
               </div>
             </li>
+            {% endfor %}
 
-            <li>
-              <div id="1234" class="manage-list-item user">
-                <a href="/manage/projects/edit/2" class="btn btn-info left-button">Edit</a>
-                <div style="display: inline-block;">
-                  <h3>Al watan</h3>
-                  <p>iPhone</p>
-                </div>
-                <div class="secondary-buttons">
-                  <a href="#" class="btn btn-warning right-button">Archive</a>
-                </div>
-              </div>
-            </li>
         </ul>
 
     </div>

@@ -190,7 +190,7 @@
           }
         }
       } else {
-        if (this.has_implicit_blanks() && imagepicker_option.is_selected()) {
+        if (!this.has_implicit_blanks() && imagepicker_option.is_selected()) {
           this.select.val("");
         } else {
           this.select.val(selected_value);

@@ -21,7 +21,8 @@
             </optgroup>
           </select>
     </div>
-
+      <input name="submenu" type="hidden" value="profile_projects">
+      <input name="id" type="hidden" value="{{ editUser.id }}">
     <div class="col-xs-4">
         <button id="assign-rojects" type="submit" class="btn btn-success">Assign Projects</button>
         <img id="assign-rojects-loading" src="{{STATIC_URL}}img/loading.gif" width="16px" height="16px"/>

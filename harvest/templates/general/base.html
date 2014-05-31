@@ -30,22 +30,26 @@
 
             <ul class="nav navbar-nav">
               <li class="{% if request.path == "/welcome/" or request.path == "/"%}active{% endif %}"><a href="/welcome"><span class="glyphicon glyphicon-home"></span></a></li>
+              {% if user.is_staff %}
               <li class="{% if "/reports/" in request.path%}active{% endif %}"><a href="/reports/users">Reports</a></li>
+              {% endif %}
               <li class="{% if "/timesheet/" in request.path%}active{% endif %}"><a href="/timesheet">Timesheet</a></li>
+              {% if user.is_staff %}
               <li class="{% if "/manage/" in request.path%}active{% endif %}"><a href="/manage/users">Manage</a></li>
+              {% endif %}
             </ul>
 
             <ul class="nav navbar-nav navbar-right nav-user">
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src='{{STATIC_URL}}img/avatar/avatar11.png' height="32" width="32" />
+                  <img src='{{ MEDIA_URL }}{{ user.thumbnail }}' height="32" width="32" />
                   <b class="caret"></b></a>
                   <ul class="dropdown-menu">
-                    <li><div class="user-information"><strong>Sergio Cirasa</strong></div></li>
+                    <li><div class="user-information"><strong>{{ user.username }}</strong></div></li>
                     <li class="divider"></li>
                     <li><a href="/manage/user/edit/">My Profile</a></li>
                     <li><a href="/reports/users/">My Time Report</a></li>
-                    <li><a href="/login/">Sign Out</a></li>
+                    <li><a href="/logout/">Sign Out</a></li>
                   </ul>
                 </li>
             </ul>

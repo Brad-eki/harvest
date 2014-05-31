@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+from django.core.urlresolvers import reverse_lazy
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -39,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
     'harvest',
     'extra_template_tags',
 )
@@ -103,6 +105,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+#Login configuration
+# Redirect when login is not correct.
+LOGIN_URL = '/login'
+# Redirect when login is correct.
+LOGIN_REDIRECT_URL = '/timesheet'
+LOGOUT_URL = reverse_lazy('logout')
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -138,3 +146,5 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
      os.path.join(BASE_DIR,'timesheet/static'),
 )
+
+STATIC_AVATAR_ROOT = os.path.join(BASE_DIR,'timesheet/static/img/avatar/')
