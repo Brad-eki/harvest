@@ -25,6 +25,14 @@ body {
 	}
 }
 
+.proyect-link{
+    margin-left: 5px;
+}
+.decoration-none a:hover,
+.decoration-none a:focus{
+    text-decoration: none;
+}
+
 .loader {
 	background:url(../img/loading.gif) no-repeat 0 0;
     font-family: "Helvetica Neue",Arial,Verdana,"Nimbus Sans L",sans-serif;

@@ -2,6 +2,24 @@
  * Created by sergio on 27/03/14.
  */
 
+function getCookie(name)
+{
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function archiveUser(userId, archive){
     $("#"+userId).remove();
 
@@ -11,7 +29,7 @@ function archiveUser(userId, archive){
     else $("#users-count").text("Users (0)");
 
     $.ajax({
-        url : '/manage/users/archive/'+userId+"?archive="+archive,
+        url : "/manage/users/"+userId+"/archive/?archive="+archive,
         data : {},
         type : 'GET',
         dataType : 'json',
@@ -29,145 +47,209 @@ function archiveUser(userId, archive){
 }
 
 
-    $(".user").click(function(){
-       window.location="/manage/user/edit/"+$(this).attr('id');
-    });
+$(".user").click(function(){
+   window.location="/manage/users/"+$(this).attr('id')+"/edit/";
+});
 
 
+$("#assign-projects").click(function(){
+    var array = $(".chosen-select").val();
 
-    $("#assign-rojects").click(function(){
-        var array = $(".chosen-select").val();
+    if(array==null)
+        return;
 
-        for(var i=0; i < array.length; i++){
+    var userId = $("#userId").val();
+    var projectsStr = "projects=";
+
+    for(var i=0; i < array.length; i++){
+        if(array[i]!=""){
             var projectName = $(".chosen-select option[value='"+array[i]+"']").text();
-            addProject(array[i],projectName);
-            $(".chosen-select option[value='"+array[i]+"']").remove();
-        }
+            projectsStr += array[i];
 
-        $('.chosen-select').chosen("destroy");
-        $('.chosen-select').chosen();
+            if(i != array.length-1)
+                projectsStr += ",";
 
-    });
-
-    function addProject(projectId,projectName){
-        var newRow = "<tr><td><a href=\"#"+projectId+"\" class=\"remove\"><span class=\"glyphicon glyphicon-remove\"></span></a><a href=\"#"+projectId+"\" class=\"proyect-link\">"+projectName+"</a></td></tr>";
-        $( ".proyect-list .table" ).append( newRow );
-    }
-
-    function notifyIfPasswordsMach(){
-        var est1 = password_validation.check_confirmation_match();
-        var est2 = password_validation.check_length();
-
-        if(est1 && est2){
-            $("#password-match-icon").css("display","block");
-        }else{
-            $("#password-match-icon").css("display","none");
+            addProjectToTable(array[i],projectName,userId);
+            $(".chosen-select option[value='"+array[i]+"']").attr('disabled','disabled');
         }
     }
 
-    $("#navigation_profile_projects").click(function(){
-        $(".chosen-container").css("width","100%");
-        $(".menu-items li").removeClass("selected");
-        $(this).addClass("selected");
-        $("#content_profile_projects").fadeIn(300);
-        $("#content_profile_base").fadeOut(0);
-        $("#content_profile_password").fadeOut(0);
-    });
+    $(".chosen-select").val('').trigger("chosen:updated");
+  //  $('.search-choice').remove();
 
-    $("#navigation_profile_base").click(function(){
-        $(".menu-items li").removeClass("selected");
-        $(this).addClass("selected");
-        $("#content_profile_projects").fadeOut(0);
-        $("#content_profile_base").fadeIn(300);
-        $("#content_profile_password").fadeOut(0);
-    });
+    if(projectsStr!="projects=")
+        addProjectsToUser(userId,projectsStr);
 
-    $("#navigation_profile_password").click(function(){
-        $(".menu-items li").removeClass("selected");
-        $(this).addClass("selected");
-        $("#content_profile_projects").fadeOut(0);
-        $("#content_profile_base").fadeOut(0);
-        $("#content_profile_password").fadeIn(300);
-    });
+});
 
-    $("#password").keyup(function() {
-        password_validation.check_strength($(this).val());
-        notifyIfPasswordsMach();
-    });
+function addProjectToTable(projectId,projectName,userId){
+     var newRow = '<tr id="'+projectId+'">';
+     newRow += '<td class="decoration-none">';
+     newRow +=  '<a href="javascript:removeProjectFromUser(\''+projectId+'\',\''+userId+'\')">';
+     newRow += '<span class="glyphicon glyphicon-remove"></span>';
+     newRow += '<span class="proyect-link">'+projectName+'</span></a>';
+     newRow += '</td>';
+     newRow += '</tr>';
+     $( ".proyect-list .table" ).append( newRow );
+}
 
-    $("#password_confirmation").keyup(function() {
-        notifyIfPasswordsMach();
-    });
+function addProjectsToUser(userId,projects){
+    $("#assign-projects-loading").css("display","inline");
+    $.ajax({
+        url : '/manage/users/'+userId+'/add/projects/',
+        data : projects,
+        type : 'POST',
+        dataType : 'json',
+        headers: { "X-CSRFToken": getCookie('csrftoken') },
+        success : function(json) {
 
-    function isEmail(email) {
-      var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-      return regex.test(email);
+        },
+        error : function(jqXHR, status, error) {
+           alert("error: "+error);
+        },
+        complete : function(jqXHR, status) {
+            $("#assign-projects-loading").css("display","none");
+        }
+    });
+}
+
+
+
+function removeProjectFromUser(projectId,userId){
+    $(".chosen-select option[value='"+projectId+"']").removeAttr('disabled');
+    $(".chosen-select").val('').trigger("chosen:updated");
+    $("#"+projectId).remove();
+    $.ajax({
+        url : '/manage/users/'+userId+'/remove/project/'+projectId+'/',
+        data : {},
+        type : 'DELETE',
+        headers: { "X-CSRFToken": getCookie('csrftoken') },
+        dataType : 'json',
+        success : function(json) {
+
+        },
+        error : function(jqXHR, status, error) {
+           alert("error: "+error);
+        },
+        complete : function(jqXHR, status) {
+        }
+    });
+}
+
+function notifyIfPasswordsMach(){
+    var est1 = password_validation.check_confirmation_match();
+    var est2 = password_validation.check_length();
+
+    if(est1 && est2){
+        $("#password-match-icon").css("display","block");
+    }else{
+        $("#password-match-icon").css("display","none");
+    }
+}
+
+$("#navigation_profile_projects").click(function(){
+    $(".chosen-container").css("width","100%");
+    $(".menu-items li").removeClass("selected");
+    $(this).addClass("selected");
+    $("#content_profile_projects").fadeIn(300);
+    $("#content_profile_base").fadeOut(0);
+    $("#content_profile_password").fadeOut(0);
+});
+
+$("#navigation_profile_base").click(function(){
+    $(".menu-items li").removeClass("selected");
+    $(this).addClass("selected");
+    $("#content_profile_projects").fadeOut(0);
+    $("#content_profile_base").fadeIn(300);
+    $("#content_profile_password").fadeOut(0);
+});
+
+$("#navigation_profile_password").click(function(){
+    $(".menu-items li").removeClass("selected");
+    $(this).addClass("selected");
+    $("#content_profile_projects").fadeOut(0);
+    $("#content_profile_base").fadeOut(0);
+    $("#content_profile_password").fadeIn(300);
+});
+
+$("#password").keyup(function() {
+    password_validation.check_strength($(this).val());
+    notifyIfPasswordsMach();
+});
+
+$("#password_confirmation").keyup(function() {
+    notifyIfPasswordsMach();
+});
+
+function isEmail(email) {
+  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+  return regex.test(email);
+}
+
+function validatePassword(){
+    var est1 = password_validation.check_confirmation_match();
+    var est2 = password_validation.check_length();
+
+    if(!est1 || !est2){
+        $("#password-form").addClass("has-error");
+        $("#confirm-password-form").addClass("has-error");
+    }else{
+        $("#password-form").removeClass("has-error");
+        $("#confirm-password-form").removeClass("has-error");
     }
 
-    function validatePassword(){
-        var est1 = password_validation.check_confirmation_match();
-        var est2 = password_validation.check_length();
+    if(est1 && est2)
+        return true;
+    else return false;
+}
 
-        if(!est1 || !est2){
-            $("#password-form").addClass("has-error");
-            $("#confirm-password-form").addClass("has-error");
-        }else{
-            $("#password-form").removeClass("has-error");
-            $("#confirm-password-form").removeClass("has-error");
-        }
+function validateCreateUserForm(shouldValidatePassword) {
+    var passwordValid = true;
 
-        if(est1 && est2)
-            return true;
-        else return false;
+    if(shouldValidatePassword)
+        passwordValid = validatePassword();
+
+    if($("#username").val().length<=3){
+        $("#username-form").addClass("has-error");
+    }else{
+        $("#username-form").removeClass("has-error");
     }
 
-    function validateCreateUserForm(shouldValidatePassword) {
-        var passwordValid = true;
+    if($("#email").val().length<=0 || !isEmail($("#email").val())){
+        $("#email-form").addClass("has-error");
+    }else{
+        $("#email-form").removeClass("has-error");
+    }
 
-        if(shouldValidatePassword)
-            passwordValid = validatePassword();
+    if(passwordValid && $("#username").val().length>0 && $("#email").val().length>0){
+        $("#create-user-error").hide(300);
+        return true;
+    }else{
+        $("#create-user-error").show(300);
+        return false;
+    }
+};
 
-        if($("#username").val().length<=3){
-            $("#username-form").addClass("has-error");
-        }else{
-            $("#username-form").removeClass("has-error");
-        }
+$("#reset-password").click(function() {
+    var est1 = password_validation.check_confirmation_match();
+    var est2 = password_validation.check_length();
 
-        if($("#email").val().length<=0 || !isEmail($("#email").val())){
-            $("#email-form").addClass("has-error");
-        }else{
-            $("#email-form").removeClass("has-error");
-        }
-
-        if(passwordValid && $("#username").val().length>0 && $("#email").val().length>0){
-            $("#create-user-error").hide(300);
-            return true;
-        }else{
-            $("#create-user-error").show(300);
-            return false;
-        }
-    };
-
-    $("#reset-password").click(function() {
-        var est1 = password_validation.check_confirmation_match();
-        var est2 = password_validation.check_length();
-
-        if(est1 && est2){
-            $("#reset-password-loading").show(300);
-            $("#alert-password-success").show(300);
-            $("#alert-password-error").hide(300);
-            //TODO: Llamar al WS de cambio de password
-        }else{
-            $("#reset-password-loading").hide(300);
-            $("#alert-password-success").hide(300);
-            $("#alert-password-error").show(300);
-        }
-
-    });
-
-    $('#alert-password-success .close').click(function () {
+    if(est1 && est2){
+        $("#reset-password-loading").show(300);
+        $("#alert-password-success").show(300);
+        $("#alert-password-error").hide(300);
+        //TODO: Llamar al WS de cambio de password
+    }else{
+        $("#reset-password-loading").hide(300);
         $("#alert-password-success").hide(300);
-    });
+        $("#alert-password-error").show(300);
+    }
+
+});
+
+$('#alert-password-success .close').click(function () {
+    $("#alert-password-success").hide(300);
+});
 
 
 $('#photo').change(function (){

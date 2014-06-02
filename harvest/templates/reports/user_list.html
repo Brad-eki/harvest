@@ -20,10 +20,12 @@ Reports
         <h3>Users:</h3>
     </div>
     <div class="col-xs-4">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search by user">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-        </div>
+        <form action="/reports/users/" method="get">
+            <div class="input-group">
+                <input id="search" name="search" type="text" class="form-control" placeholder="Search by user" value="{% if search %}{{ search }}{% endif %}">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -31,26 +33,24 @@ Reports
     <div class="col-xs-12">
         <ul class="manage-list">
             <li>
-                <h2 class="manage-list-header">Users (2)</h2>
+                <h2 class="manage-list-header">Users ({{ users|length }})</h2>
             </li>
 
-            <li>
-              <div id="1234" class="manage-list-item user">
+            {% for user in users %}
+            <li id="{{ user.id }}"  class="user">
+              <div class="manage-list-item">
                 <div style="display: inline-block;">
-                  <h3>Sergio Cirasa</h3>
+                  {% if user.first_name %}
+                    <h3>{{ user.first_name|title }} {{ user.last_name|title }}</h3>
+                  {% else %}
+                    <h3>{{ user.username }}</h3>
+                  {% endif %}
                   <p>Last Report on 29 Mar 2014</p>
                 </div>
               </div>
             </li>
+            {% endfor %}
 
-            <li>
-              <div id="1234" class="manage-list-item user">
-                <div style="display: inline-block;">
-                  <h3>Sergio Cirasa</h3>
-                  <p>Last Report on 29 Mar 2014</p>
-                </div>
-              </div>
-            </li>
         </ul>
 
     </div>

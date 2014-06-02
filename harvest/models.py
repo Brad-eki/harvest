@@ -10,7 +10,10 @@ from harvest.general.storage import OverwriteStorage
 def only_filename(instance, filename):
     return filename
 
-User.add_to_class('thumbnail', models.ImageField(storage=OverwriteStorage(),upload_to = only_filename ))
+class ManyToManyField_NoSyncdb(models.ManyToManyField):
+    def __init__(self, *args, **kwargs):
+        super(ManyToManyField_NoSyncdb, self).__init__(*args, **kwargs)
+        self.creates_table = False
 
 class Project(models.Model):
 
@@ -29,7 +32,7 @@ class Project(models.Model):
     )
 
     id = models.AutoField(primary_key=True)
-    user = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, related_name='users',db_table='harvest_projects_users')
     name = models.CharField(max_length=50)
     client = models.CharField(max_length=50,blank=True)
     type = models.CharField(max_length=20,choices=PROJECT_TYPE)
@@ -76,3 +79,7 @@ class Task(models.Model):
         verbose_name = 'task'
         verbose_name_plural = 'tasks'
         ordering = ['-created']
+
+
+User.add_to_class('thumbnail', models.ImageField(storage=OverwriteStorage(),upload_to = only_filename ))
+User.add_to_class('projects', ManyToManyField_NoSyncdb(Project, related_name='projects',db_table='harvest_projects_users'))

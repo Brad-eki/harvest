@@ -16,6 +16,39 @@ from django.core.files import File
 from django.core.files.storage import default_storage
 from django.db.models import FileField
 
+
+
+#-------------------------------------------------------------------------------------------------------------#
+#------------------------Helper Methods-----------------------------------------------------------------------#
+def userList(request):
+    users = None
+    if request.method == 'GET' and request.GET.get("search")!=None:
+        q = request.GET.get("search")
+        users = User.objects.filter(
+                    Q(is_active=1),
+                    Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q)
+                )
+
+    else:
+        users = User.objects.filter(is_active=1).order_by('username')
+
+    return users
+
+
+def projectList(request):
+    projects = None
+    if request.method == 'GET' and request.GET.get("search")!=None:
+        q = request.GET.get("search")
+        projects = Project.objects.filter(
+                    Q(is_active=1),
+                    Q(name__icontains=q) | Q(type__icontains=q) | Q(client__icontains=q)
+                    )
+
+    else:
+        projects = Project.objects.filter(is_active=1).order_by('name')
+
+    return projects
+
 #-------------------------------------------------------------------------------------------------------------#
 def user_is_staff(user):
     return user.is_staff
@@ -47,20 +80,22 @@ def home(request):
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def reports_user_list(request):
-    return render_to_response('reports/user_list.html',context_instance=RequestContext(request))
+    users = userList(request)
+    return render_to_response('reports/user_list.html',{'users':users,"search":request.GET.get("search")},context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def reports_project_list(request):
-    return render_to_response('reports/project_list.html',context_instance=RequestContext(request))
+    projects = projectList(request)
+    return render_to_response('reports/project_list.html',{'projects':projects,"search":request.GET.get("search")},context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
-def user_report(request):
+def user_report(request,userId):
     return render_to_response('reports/user_report.html',context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
-def project_report(request):
+def project_report(request,projectId):
     return render_to_response('reports/project_report.html',context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
@@ -75,18 +110,7 @@ def timesheet(request):
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def admin_project_list(request):
-
-    projects = None
-    if request.method == 'GET' and request.GET.get("search")!=None:
-        q = request.GET.get("search")
-        projects = Project.objects.filter(
-                    Q(is_active=1),
-                    Q(name__icontains=q) | Q(type__icontains=q) | Q(client__icontains=q)
-                    )
-
-    else:
-        projects = Project.objects.filter(is_active=1).order_by('name')
-
+    projects = projectList(request)
     return render_to_response('admin/project/project_list.html',{'projects':projects,"search":request.GET.get("search")},context_instance=RequestContext(request))
 
 #-------------------------------------------------------------------------------------------------------------#
@@ -135,19 +159,51 @@ def admin_create_project(request):
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def edit_project(request,projectId):
 
+    projects = Project.objects.filter(id=projectId)
+    project = projects[0]
+    projectUsers = User.objects.filter(Q(projects__in=projects), Q(is_active=1))
+    users = User.objects.filter(is_active=1)
+
     if request.POST.get("submenu") == "project_profile":
         form = ProjectForm(request.POST)
         if form.is_valid(): # All validation rules pass
             form.save()
-            return render_to_response('admin/project/edit_project.html',{'form':form,'profileChangedSuccesful':1,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
+            return render_to_response('admin/project/edit_project.html',{'form':form,'projectUsers':projectUsers,'users':users,'profileChangedSuccesful':1,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
         else:
-            return render_to_response('admin/project/edit_project.html',{'form':form,'profileChangedSuccesful':0,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
+            return render_to_response('admin/project/edit_project.html',{'form':form,'projectUsers':projectUsers,'users':users,'profileChangedSuccesful':0,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
 
     else:
-        project = Project.objects.get(id=projectId)
         form = ProjectForm(initial={'id':project.id, 'name':project.name, 'client':project.client, 'type':project.type,'estimated_hours':project.estimated_hours})
-        return render_to_response('admin/project/edit_project.html',{'form':form},context_instance=RequestContext(request))
+        return render_to_response('admin/project/edit_project.html',{'form':form,'projectUsers':projectUsers,'users':users},context_instance=RequestContext(request))
 
+
+@login_required
+@user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
+def admin_remove_user_from_project(request,projectId,userId):
+    if request.method == "DELETE":
+        project = Project.objects.get(id=projectId)
+        user = User.objects.get(id=userId)
+        user.projects.remove(project)
+        print "user_id: "+userId
+        print "project_id: "+projectId
+
+    return HttpResponse(json.dumps("{}"), content_type = "application/json")
+
+
+@login_required
+@user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
+def admin_add_users_to_project(request,projectId):
+    if request.POST:
+
+        users = request.POST.get("users").split(",")
+        if projectId and users and len(users) > 0 :
+            project = Project.objects.get(id=projectId)
+            if project:
+                for userId in users:
+                    user = User.objects.get(id=userId)
+                    project.users.add(user)
+
+    return HttpResponse(json.dumps("{}"), content_type = "application/json")
 
 #-------------------------------------------------------------------------------------------------------------#
 #***************************************** USER VIEWS *********************************************************
@@ -173,6 +229,11 @@ def admin_create_user(request):
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def edit_user_profile(request,userId):
 
+    users = User.objects.filter(id=userId)
+    user = users[0]
+    userProjects = Project.objects.filter(Q(users__in=users), Q(is_active=1))
+    projects = Project.objects.filter(is_active=1)
+
     if request.POST and request.POST.get("submenu") == "profile_password":
         form = EditUserPasswordForm(request.POST)
         successful = 1
@@ -183,7 +244,7 @@ def edit_user_profile(request,userId):
 
         user = User.objects.get(id=userId)
         form = EditUserForm(initial={'id':user.id, 'username':user.username, 'first_name':user.first_name,'last_name':user.last_name,'email':user.email,'is_staff':user.is_staff,'thumbnail':user.thumbnail})
-        return render_to_response('admin/user/edit_profile.html',{'form':form},context_instance=RequestContext(request))
+        return render_to_response('admin/user/edit_profile.html',{'form':form,'userProjects':userProjects,'projects':projects},context_instance=RequestContext(request))
 
     elif request.POST:
         print str(request.POST)
@@ -191,18 +252,44 @@ def edit_user_profile(request,userId):
         if form.is_valid(): # All validation rules pass
             user = form.save()
             form.initial = {'thumbnail':user.thumbnail}
-            return render_to_response('admin/user/edit_profile.html',{'form':form,'profileChangedSuccesful':1,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
+            return render_to_response('admin/user/edit_profile.html',{'form':form,'userProjects':userProjects,'projects':projects,'profileChangedSuccesful':1,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
         else:
             print form.errors
             user = User.objects.get(id=userId)
             form.initial = {'thumbnail':user.thumbnail}
-            return render_to_response('admin/user/edit_profile.html',{'form':form,'error':form.errors,'profileChangedSuccesful':0,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
+            return render_to_response('admin/user/edit_profile.html',{'form':form,'userProjects':userProjects,'projects':projects,'error':form.errors,'profileChangedSuccesful':0,'submenu':request.POST.get('submenu')},context_instance=RequestContext(request))
 
     else:
-        user = User.objects.get(id=userId)
         form = EditUserForm(initial={'id':user.id, 'username':user.username, 'first_name':user.first_name,'last_name':user.last_name,'email':user.email,'is_staff':user.is_staff,'thumbnail':user.thumbnail})
-        return render_to_response('admin/user/edit_profile.html',{'form':form},context_instance=RequestContext(request))
+        return render_to_response('admin/user/edit_profile.html',{'form':form,'userProjects':userProjects,'projects':projects},context_instance=RequestContext(request))
 
+#-------------------------------------------------------------------------------------------------------------#
+@login_required
+@user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
+def admin_remove_project_from_user(request,userId,projectId):
+    if request.method == "DELETE":
+        user = User.objects.get(id=userId)
+        project = Project.objects.get(id=projectId)
+        project.users.remove(user)
+
+        print "user_id: "+userId
+        print "project_id: "+projectId
+
+    return HttpResponse(json.dumps("{}"), content_type = "application/json")
+#-------------------------------------------------------------------------------------------------------------#
+@login_required
+@user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
+def admin_add_projects_to_user(request,userId):
+    if request.POST:
+        projects = request.POST.get("projects").split(",")
+        if userId and projects and len(projects) > 0 :
+            user = User.objects.get(id=userId)
+            if user:
+                for projectId in projects:
+                    project = Project.objects.get(id=projectId)
+                    user.projects.add(project)
+
+    return HttpResponse(json.dumps("{}"), content_type = "application/json")
 #-------------------------------------------------------------------------------------------------------------#
 
 @login_required
@@ -232,18 +319,7 @@ def admin_archive_user(request, userId):
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def admin_user_list(request):
-
-    users = None
-    if request.method == 'GET' and request.GET.get("search")!=None:
-        q = request.GET.get("search")
-        users = User.objects.filter(
-                    Q(is_active=1),
-                    Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q)
-                )
-
-    else:
-        users = User.objects.filter(is_active=1).order_by('username')
-
+    users = userList(request)
     return render_to_response('admin/user/user_list.html',{'users':users,"search":request.GET.get("search")},context_instance=RequestContext(request))
 
 #-------------------------------------------------------------------------------------------------------------#

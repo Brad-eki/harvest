@@ -3,41 +3,34 @@
 <h3>Your Projects</h3>
 </div>
 
+<input name="submenu" type="hidden" value="profile_projects">
+<input id="userId" name="id" type="hidden" value="{{ form.id.value|default:"" }}">
 <div class="col-xs-12 well" style="margin-top:10px;">
     <div class="col-xs-8">
-          <select data-placeholder="Select projects to assign..." class="chosen-select" multiple tabindex="6">
-            <option value=""></option>
-            <optgroup label="NFC EAST">
-              <option value="A">Dallas Cowboys</option>
-              <option value="B">New York Giants</option>
-              <option value="C">Philadelphia Eagles</option>
-              <option value="D">Washington Redskins</option>
-            </optgroup>
-            <optgroup label="NFC NORTH">
-              <option value="E">Chicago Bears</option>
-              <option value="F">Detroit Lions</option>
-              <option value="G">Green Bay Packers</option>
-              <option value="H">Minnesota Vikings</option>
-            </optgroup>
+          <select id="projects" name="projects" data-placeholder="Select projects to assign..." class="chosen-select" multiple tabindex="6">
+              {% for project in projects %}
+              <option {% if project in userProjects %}disabled {% endif %}value="{{ project.id }}">{{ project.name|title }}</option>
+              {% endfor %}
           </select>
     </div>
-      <input name="submenu" type="hidden" value="profile_projects">
-      <input name="id" type="hidden" value="{{ editUser.id }}">
     <div class="col-xs-4">
-        <button id="assign-rojects" type="submit" class="btn btn-success">Assign Projects</button>
-        <img id="assign-rojects-loading" src="{{STATIC_URL}}img/loading.gif" width="16px" height="16px"/>
+        <button id="assign-projects" type="submit" class="btn btn-success">Assign Projects</button>
+        <img id="assign-projects-loading" style="display: none" src="{{STATIC_URL}}img/loading.gif" width="16px" height="16px"/>
     </div>
-
 </div>
+
 <div class="row"/>
     <div class="col-xs-12 proyect-list">
         <table class="table" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
-                <tr>
-                    <td>
-                      <a href="#" class="remove"><span class="glyphicon glyphicon-remove"></span></a>
-                      <a href="#" class="proyect-link">Proyecto 1234</a>
+                {% for project in userProjects %}
+                <tr id="{{ project.id }}">
+                    <td class="decoration-none">
+                        <a href="javascript:removeProjectFromUser('{{ project.id }}','{{ form.id.value }}')">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        <span class="project-link">{{ project.name|title }}</span></a>
                     </td>
                 </tr>
+                {% endfor %}
           </table>
     </div>
 </div>

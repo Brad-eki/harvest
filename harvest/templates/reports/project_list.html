@@ -20,10 +20,12 @@ Reports
         <h3>Projects:</h3>
     </div>
     <div class="col-xs-4">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search by project">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-        </div>
+        <form action="/reports/projects/" method="get">
+            <div class="input-group">
+                <input id="search" name="search" type="text" class="form-control" placeholder="Search by project" value="{% if search %}{{ search }}{% endif %}">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -31,28 +33,19 @@ Reports
     <div class="col-xs-12">
         <ul class="manage-list">
             <li>
-                <h2 class="manage-list-header">Projects (2)</h2>
+                <h2 class="manage-list-header">Projects ({{ projects|length }})</h2>
             </li>
-
-            <li>
-              <div id="1234" class="manage-list-item project">
+            {% for project in projects %}
+            <li id="{{ project.id }}" class="project">
+              <div class="manage-list-item">
                 <div style="display: inline-block;">
-                  <h3>Sovanta</h3>
-                  <p>Android</p>
+                  <h3>{{ project.name|title }} {% if project.client %} - {{ project.client|title }}{% endif %}</h3>
+                  <p>{{ project.type }}</p>
                 </div>
               </div>
             </li>
-
-            <li>
-              <div id="1234" class="manage-list-item project">
-                <div style="display: inline-block;">
-                  <h3>Sovanta</h3>
-                  <p>Android</p>
-                </div>
-              </div>
-            </li>
+            {% endfor %}
         </ul>
-
     </div>
 </div>
 

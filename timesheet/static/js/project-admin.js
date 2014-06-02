@@ -2,10 +2,26 @@
  * Created by sergio on 31/03/14.
  */
 
+function getCookie(name)
+{
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
 $(".project").click(function(){
-    window.location="/manage/projects/edit/"+$(this).attr('id');
-
+    window.location="/manage/projects/"+$(this).attr('id')+"/edit/";
 });
 
 function archiveProject(projectId, archive){
@@ -17,7 +33,7 @@ function archiveProject(projectId, archive){
     else $("#projects-count").text("Projects (0)");
 
     $.ajax({
-        url : '/manage/projects/archive/'+projectId+"/?archive="+archive,
+        url : "/manage/projects/"+projectId+"/archive/?archive="+archive,
         data : {},
         type : 'GET',
         dataType : 'json',
@@ -88,3 +104,87 @@ $("#navigation_profile_base").click(function(){
 });
 
 
+
+
+$("#assign-users").click(function(){
+    var array = $(".chosen-select").val();
+
+    if(array==null)
+        return;
+
+    var projectId = $("#projectId").val();
+    var usersStr = "users=";
+
+    for(var i=0; i < array.length; i++){
+        if(array[i]!=""){
+            var userName = $(".chosen-select option[value='"+array[i]+"']").text();
+            usersStr += array[i];
+
+            if(i != array.length-1)
+                usersStr += ",";
+
+            addUsersToTable(array[i],userName,projectId);
+            $(".chosen-select option[value='"+array[i]+"']").attr('disabled','disabled');
+        }
+    }
+
+    $(".chosen-select").val('').trigger("chosen:updated");
+  //  $('.search-choice').remove();
+
+    if(usersStr!="users=")
+        addUsersToProject(projectId,usersStr);
+
+});
+
+function addUsersToTable(userId,userName,projectId){
+     var newRow = '<tr id="'+userId+'">';
+     newRow += '<td class="decoration-none">';
+     newRow +=  '<a href="javascript:removeUserFromProject(\''+userId+'\',\''+projectId+'\')">';
+     newRow += '<span class="glyphicon glyphicon-remove"></span>';
+     newRow += '<span class="proyect-link">'+userName+'</span></a>';
+     newRow += '</td>';
+     newRow += '</tr>';
+     $( ".user-list .table" ).append( newRow );
+}
+
+function addUsersToProject(projectId,users){
+    $("#assign-users-loading").css("display","inline");
+    $.ajax({
+        url : '/manage/projects/'+projectId+'/add/users/',
+        data : users,
+        type : 'POST',
+        dataType : 'json',
+        headers: { "X-CSRFToken": getCookie('csrftoken') },
+        success : function(json) {
+
+        },
+        error : function(jqXHR, status, error) {
+           alert("error: "+error);
+        },
+        complete : function(jqXHR, status) {
+            $("#assign-users-loading").css("display","none");
+        }
+    });
+}
+
+
+function removeUserFromProject(userId,projectId){
+    $(".chosen-select option[value='"+userId+"']").removeAttr('disabled');
+    $(".chosen-select").val('').trigger("chosen:updated");
+    $("#"+userId).remove();
+    $.ajax({
+        url : '/manage/projects/'+projectId+'/remove/users/'+userId+'/',
+        data : {},
+        type : 'DELETE',
+        headers: { "X-CSRFToken": getCookie('csrftoken') },
+        dataType : 'json',
+        success : function(json) {
+
+        },
+        error : function(jqXHR, status, error) {
+           alert("error: "+error);
+        },
+        complete : function(jqXHR, status) {
+        }
+    });
+}

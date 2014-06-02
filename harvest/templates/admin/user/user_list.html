@@ -49,7 +49,7 @@ Manage Users
             {% for user in users %}
             <li id="{{ user.id }}"  class="user">
               <div class="manage-list-item">
-                <a href="/manage/user/edit/{{ user.id }}" class="btn btn-info left-button">Edit</a>
+                <a href="/manage/users/{{ user.id }}/edit/" class="btn btn-info left-button">Edit</a>
                 <div style="display: inline-block;">
                   {% if user.first_name %}
                     <h3>{{ user.first_name|title }} {{ user.last_name|title }}</h3>
