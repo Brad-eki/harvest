@@ -1,5 +1,5 @@
 {% extends 'general/base.html' %}
-
+{% load extra_tags %}
 
 {% block home-item-selected %}class="active"{% endblock %}
 
@@ -12,6 +12,7 @@
     <link rel='stylesheet' href='{{STATIC_URL}}css/font-awesome.min.css'>
     <link rel='stylesheet' href='{{STATIC_URL}}css/ionicons.min.css'>
     <link rel='stylesheet' href='{{STATIC_URL}}css/home.css'>
+    <link rel='stylesheet' href='{{STATIC_URL}}css/box.css'>
 {% endblock %}
 
 
@@ -41,7 +42,7 @@
                         <!-- small box -->
                         <div class="small-box bg-aqua">
                             <div class="inner">
-                                <h3>8</h3>
+                                <h3>{{ today }}</h3>
                             </div>
                             <a href="#" class="small-box-footer">
                                 Hours Today
@@ -52,7 +53,7 @@
                         <!-- small box -->
                         <div class="small-box bg-green">
                             <div class="inner">
-                                <h3>40</h3>
+                                <h3>{{ week }}</h3>
                             </div>
                             <a href="#" class="small-box-footer">
                                 Hours This Week
@@ -63,7 +64,7 @@
                         <!-- small box -->
                         <div class="small-box bg-yellow">
                             <div class="inner">
-                                <h3>160</h3>
+                                <h3>{{ month }}</h3>
                             </div>
                             <a href="#" class="small-box-footer">
                                 Hour This Month
@@ -75,7 +76,7 @@
                         <!-- small box -->
                         <div class="small-box bg-red">
                             <div class="inner">
-                                <h3>1920</h3>
+                                <h3>{{ year }}</h3>
                             </div>
                             <a href="#" class="small-box-footer">
                                 Hour This Year
@@ -165,54 +166,12 @@
                         </tr>
                       </thead>
                       <tbody>
+                      {% for aMonth in allMonths %}
                         <tr>
-                          <td>January</td>
-                          <td>23</td>
+                          <td>{{ aMonth.name }}</td>
+                          <td>{{ aMonth.hours|decimal_to_time }}</td>
                         </tr>
-                        <tr>
-                          <td>February</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>March</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>April</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>May</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>June</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>July</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>August</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>September</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>October</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>November</td>
-                          <td>23</td>
-                        </tr>
-                        <tr>
-                          <td>December</td>
-                          <td>23</td>
-                        </tr>
+                      {% endfor %}
                       </tbody>
                    </table>
                 </div>

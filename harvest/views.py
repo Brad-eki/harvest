@@ -11,12 +11,10 @@ from django.shortcuts import render_to_response
 from harvest.forms import *
 from django.db.models import Q
 import json
-import urllib
-from django.core.files import File
-from django.core.files.storage import default_storage
-from django.db.models import FileField
-
-
+from datetime import timedelta, datetime, time
+from django.utils import timezone
+from django.db.models import Sum
+import array
 
 #-------------------------------------------------------------------------------------------------------------#
 #------------------------Helper Methods-----------------------------------------------------------------------#
@@ -31,6 +29,13 @@ def userList(request):
 
     else:
         users = User.objects.filter(is_active=1).order_by('username')
+
+    for user in users:
+        tasks = Task.objects.filter(user=user).order_by('-modified')
+        if tasks:
+            user.last_report = tasks[0].modified.strftime('%d %b %Y %H:%M')
+        else:
+            user.last_report = "-"
 
     return users
 
@@ -56,6 +61,16 @@ def user_is_staff(user):
 def user_is_not_staff(user):
     return not user.is_staff
 
+def is_staff_or_current_user(user,userId):
+    if user.is_staff:
+        return True
+
+    if user.id != int(userId):
+        return False
+
+    return True
+#-------------------------------------------------------------------------------------------------------------#
+
 # Error
 def error_403(request):
     return render_to_response('error/403.html',context_instance=RequestContext(request))
@@ -75,7 +90,51 @@ def error_503(request):
 # Navigation
 @login_required
 def home(request):
-    return render_to_response('home/home.html', {},context_instance=RequestContext(request))
+
+    today = 0
+    week = 0
+    month = 0
+    year = 0
+    allMonths = [{'name':'January','hours':0},{'name':'February','hours':0},{'name':'March','hours':0},{'name':'April','hours':0},{'name':'May','hours':0},{'name':'June','hours':0},{'name':'July','hours':0},{'name':'August','hours':0},{'name':'September','hours':0},{'name':'October','hours':0},{'name':'November','hours':0},{'name':'December','hours':0}];
+
+    some_day_last_week = timezone.now().date() - timedelta(days=7)
+    monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
+    monday_of_this_week = monday_of_last_week + timedelta(days=7)
+
+    print "some_day_last_week: " +str(some_day_last_week)
+    print "monday_of_last_week: " +str(monday_of_last_week)
+    print "monday_of_this_week: " +str(monday_of_this_week)
+
+    now = datetime.now().replace(microsecond=0)
+    print "mes: " + str(now.month)
+
+    today = Task.objects.filter(user=request.user).filter(modified=now.date()).aggregate(Sum('duration'))["duration__sum"]
+    if not today:
+        today = '0'
+
+    week = Task.objects.filter(user=request.user).filter(modified__range=[monday_of_this_week, now.date()]).aggregate(Sum('duration'))["duration__sum"]
+    if not week:
+        week = '0'
+
+    month = Task.objects.filter(user=request.user).filter(modified__month=6).aggregate(Sum('duration'))["duration__sum"]
+
+    if not month:
+        month = '0'
+
+    year = Task.objects.filter(user=request.user).filter(modified__year=now.year).aggregate(Sum('duration'))["duration__sum"]
+    if not year:
+        year = '0'
+
+    i=1
+    for aMonth in allMonths:
+        hours = Task.objects.filter(user=request.user).filter(modified__month=i).aggregate(Sum('duration'))["duration__sum"]
+        i+=1
+        if not hours:
+            hours = '0'
+        aMonth['hours'] = hours
+
+
+    return render_to_response('home/home.html', {'today':today,'week':week,'month':month,'year':year,'allMonths':allMonths},context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
@@ -91,12 +150,142 @@ def reports_project_list(request):
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 def user_report(request,userId):
-    return render_to_response('reports/user_report.html',context_instance=RequestContext(request))
+    if not is_staff_or_current_user(request.user,userId):
+        return HttpResponseRedirect("/reports/users/"+str(request.user.id)+"/")
+
+    now = datetime.now()
+    lastWeek = now - timedelta(days=7)
+    fromDate = None
+    toDate = None
+    selectedProjects = None
+    anUser = User.objects.get(id=userId)
+
+    if request.GET.get("from"):
+        fromDate = request.GET.get("from")
+    else:
+        fromDate = str(lastWeek.year) + "-" + str(lastWeek.month) +"-"+ str(lastWeek.day)
+
+    if request.GET.get("to"):
+        toDate = request.GET.get("to")
+    else:
+        toDate = str(now.year) + "-" + str(now.month) +"-"+ str(now.day)
+
+    if request.GET.get("projects"):
+        selectedProjects = request.GET.getlist("projects")
+    else:
+        tasks = Task.objects.filter(user=request.user).order_by('-modified')
+        if tasks:
+            selectedProjects = [str(tasks[0].project.id)]
+        else:
+            selectedProjects = None
+            fromDate = None
+            toDate = None
+
+    users = [anUser]
+    projects = Project.objects.filter(Q(users__in=users), Q(is_active=1))
+
+    tasks = None
+    total = 0.0
+    if selectedProjects:
+        tasks = Task.objects.filter(Q(user=anUser , project__in=selectedProjects)).filter(modified__range=[fromDate, toDate])
+        for task in tasks:
+            total += float(task.duration)
+
+    return render_to_response('reports/user_report.html',{'tasks':tasks,"total":total,'projects':projects,'to':toDate,'from':fromDate,'selectedProjects':selectedProjects},context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def project_report(request,projectId):
-    return render_to_response('reports/project_report.html',context_instance=RequestContext(request))
+
+    project = Project.objects.get(id=projectId)
+    users = User.objects.filter(projects__in=[project])
+    fromDate = None
+    toDate = None
+    now = datetime.now()
+
+    if request.GET.get("from"):
+        fromDate = request.GET.get("from")
+    else:
+        created = project.created
+        fromDate = str(created.year) + "-" + str(created.month) +"-"+ str(created.day)
+
+    if request.GET.get("to"):
+        toDate = request.GET.get("to")
+    else:
+        toDate = str(now.year) + "-" + str(now.month) +"-"+ str(now.day)
+
+
+    typeNames = []
+    rows = []
+    i = 0
+    j = 0
+
+    totalRow = []
+    for value in Task.TASK_TYPE:
+        typeNames.insert(i,value[0])
+        totalRow.insert(i,0)
+        i += 1
+
+    totalRow.insert(i,0) #Total
+    lastIndex = len(totalRow)-1
+
+    for aUser in users:
+        row = []
+        name = ""
+
+        if aUser.first_name == "":
+            name = aUser.username
+        else:
+            name = aUser.first_name + " " + aUser.last_name
+
+        row.insert(0,name)
+
+        i = 1
+        total = 0
+        for type in typeNames:
+            hours = Task.objects.filter(user=aUser,project=project,type=type).filter(modified__range=[fromDate, toDate]).aggregate(Sum('duration'))["duration__sum"]
+            if hours == None:
+                hours = 0
+            row.insert(i,hours)
+            total += hours
+            totalRow[i-1] = totalRow[i-1] + hours
+            totalRow[lastIndex] = totalRow[lastIndex] + hours
+            i+=1
+
+        row.insert(i,total)
+        rows.insert(j,row)
+        j+=1
+
+
+    total = totalRow[lastIndex]
+    colors = ['#68BC31','#2091CF','#AF4E96','#DA5430','#FEE074','#a069c3','#f79263','#6fb3e0','#f89406','#5bc0de','#85144b','#0073b7','#fcf8e3','#B94A48']
+    taskChart = []
+    i = 0
+    for type in typeNames:
+
+        if i < len(colors):
+            color = colors[i]
+        else:
+            color = colors[int(i/len(colors))]
+
+        percentage = round((totalRow[i] / total) * 100,2)
+        taskChart.insert(i,{'name':type,'percentage':percentage,'color':color})
+        i+=1
+
+    userChart = []
+    i = 0
+    for row in rows:
+
+        if i < len(colors):
+            color = colors[i]
+        else:
+            color = colors[int(i/len(colors))]
+
+        percentage = round((row[len(row)-1] / total) * 100,2)
+        userChart.insert(i,{'name':row[0],'percentage':percentage,'color':color})
+        i+=1
+    print "total: "+str(total)
+    return render_to_response('reports/project_report.html',{'projectName':project.name,'projectType':project.type,'typeNames':typeNames,'rows':rows,'totalRow':totalRow,'to':toDate,'from':fromDate,'taskChart':taskChart,'userChart':userChart},context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 def timesheet(request):
@@ -126,7 +315,6 @@ def admin_archived_projects(request):
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def admin_archive_project(request,projectId):
     if(request.GET  and request.GET.get("archive")):
-        #TODO: obtener el id de la url y remplazar
         project = Project.objects.get(id=int(projectId))
         if project:
             if request.GET.get("archive") == "true" or request.GET.get("archive") == "True" or request.GET.get("archive") == "1":
@@ -226,9 +414,13 @@ def admin_create_user(request):
 #-------------------------------------------------------------------------------------------------------------#
 
 @login_required
-@user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
+#@user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def edit_user_profile(request,userId):
 
+    if not is_staff_or_current_user(request.user,userId):
+        return HttpResponseRedirect("/manage/users/"+str(request.user.id)+"/edit/")
+
+    print "siguio"
     users = User.objects.filter(id=userId)
     user = users[0]
     userProjects = Project.objects.filter(Q(users__in=users), Q(is_active=1))
@@ -262,6 +454,7 @@ def edit_user_profile(request,userId):
     else:
         form = EditUserForm(initial={'id':user.id, 'username':user.username, 'first_name':user.first_name,'last_name':user.last_name,'email':user.email,'is_staff':user.is_staff,'thumbnail':user.thumbnail})
         return render_to_response('admin/user/edit_profile.html',{'form':form,'userProjects':userProjects,'projects':projects},context_instance=RequestContext(request))
+
 
 #-------------------------------------------------------------------------------------------------------------#
 @login_required

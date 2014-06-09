@@ -37,18 +37,19 @@ Reports
             </li>
 
             {% for user in users %}
-            <li id="{{ user.id }}"  class="user">
-              <div class="manage-list-item">
-                <div style="display: inline-block;">
-                  {% if user.first_name %}
-                    <h3>{{ user.first_name|title }} {{ user.last_name|title }}</h3>
-                  {% else %}
-                    <h3>{{ user.username }}</h3>
-                  {% endif %}
-                  <p>Last Report on 29 Mar 2014</p>
-                </div>
-              </div>
-            </li>
+                <li id="{{ user.id }}"  class="user">
+                  <div class="manage-list-item">
+                    <img  class="img-circle" src="{{ MEDIA_URL }}{{ user.thumbnail }}">
+                    <div style="display: inline-block;">
+                      {% if user.first_name %}
+                        <h3>{{ user.first_name|title }} {{ user.last_name|title }}</h3>
+                      {% else %}
+                        <h3>{{ user.username }}</h3>
+                      {% endif %}
+                      <p>Last Report on {{ user.last_report }}</p>
+                    </div>
+                  </div>
+                </li>
             {% endfor %}
 
         </ul>

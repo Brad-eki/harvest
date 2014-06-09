@@ -59,7 +59,7 @@ Manage Users
                     {% if user.is_staff %}
                     <span class="label label-danger">Admin</span>
                     {% endif %}
-                  <p>Last Report on 29 Mar 2014</p>
+                  <p>Last Report on {{ user.last_report }}</p>
                 </div>
                 <div class="secondary-buttons">
                   <button onclick="javascript:archiveUser({{ user.id }},'True')" class="btn btn-warning right-button archived">Archive</button>

@@ -1,5 +1,6 @@
 from django import template
 from django.http import QueryDict
+from math import floor
 
 # Permite crear variables en un template --> https://djangosnippets.org/snippets/539/
 class AssignNode(template.Node):
@@ -50,10 +51,53 @@ def clean_str(value):
     return value.replace("/", "")
 
 #--------------------------------------------------------------------------------------------------
+# Convierte un decimal a una hora
+# Example: {{ attr.name|decimal_to_time:10.5 }}
+def decimal_to_time(value):
 
+    nro = float(value)
+
+    minutes = nro * 60
+    hour = int(floor(minutes/60.0))
+    minutes = int(minutes - hour * 60.0)
+    time = str(minutes)+" min"
+    if hour > 0:
+        time = str(hour)+" hs "+time
+
+    return time
+
+#--------------------------------------------------------------------------------------------------
+# Convierte un decimal a una hora
+# Example: {{ attr.name|decimal_to_time:10.5 }}
+def date_picker_format(value):
+
+    if value == None:
+        return None
+
+    list = value.split("-")
+
+    if len(list) != 3:
+        return None
+
+    year = list[0]
+    month = list[1]
+    day = list[2]
+
+    if int(month) < 10:
+        month = "0"+str(int(month))
+    if int(day) < 10:
+        day = "0"+str(int(day))
+
+    value = year +"-"+ month +"-"+day
+
+    return value
+
+#--------------------------------------------------------------------------------------------------
 # Registro los filtros
 register = template.Library()
 register.tag('assign', do_assign)
 register.filter('cut', cut)
 register.filter('replace', replace)
 register.filter('clean_str', clean_str)
+register.filter('decimal_to_time', decimal_to_time)
+register.filter('date_picker_format', date_picker_format)

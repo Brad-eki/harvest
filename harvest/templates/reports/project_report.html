@@ -1,7 +1,150 @@
 {% extends 'general/base.html' %}
+{% load extra_tags %}
+
+{% block style_css %}
+    <link rel='stylesheet' href='{{STATIC_URL}}css/font-awesome.min.css'>
+    <link rel='stylesheet' href='{{STATIC_URL}}css/ionicons.min.css'>
+    <link rel='stylesheet' href='{{STATIC_URL}}css/box.css'>
+{% endblock %}
 
 {% block javascript %}
     <script src='{{STATIC_URL}}js/project-report.js'></script>
+    <script src='{{STATIC_URL}}js/chart/jquery.flot.min.js'></script>
+    <script src='{{STATIC_URL}}js/chart/jquery.flot.pie.min.js'></script>
+    <script src='{{STATIC_URL}}js/chart/jquery.flot.resize.min.js'></script>
+    <script>
+              var data = [
+                {% for task in taskChart %}
+                    {% if task.percentage != 0 %}
+				        { label: "{{ task.name }}",  data: {{ task.percentage }}, color: '{{ task.color }}' },
+                    {% endif %}
+                {% endfor %}
+			  ];
+
+			  var placeholder = $('#piechart-placeholder').css({'width':'90%' , 'min-height':'180px'});
+			  $.plot(placeholder, data, {
+
+				series: {
+			        pie: {
+			            show: true,
+						tilt:0.8,
+						highlight: {
+							opacity: 0.25
+						},
+						stroke: {
+							color: '#fff',
+							width: 2
+						},
+						startAngle: 2
+
+			        }
+			    },
+			    legend: {
+			        show: true,
+					position: "ne",
+				    labelBoxBorderColor: null,
+					margin:[-30,15]
+			    }
+				,
+				grid: {
+					hoverable: true,
+					clickable: true
+				},
+				tooltip: true, //activate tooltip
+				tooltipOpts: {
+					content: "%s : %y.1",
+					shifts: {
+						x: -30,
+						y: -50
+					}
+				}
+
+			 });
+
+              var data2 = [
+                {% for user in userChart %}
+                    {% if user.percentage != 0 %}
+				        { label: "{{ user.name }}",  data: {{ user.percentage }}, color: '{{ user.color }}' },
+                    {% endif %}
+                {% endfor %}
+			  ];
+
+			  var placeholder2 = $('#piechart-user').css({'width':'90%' , 'min-height':'180px'});
+			  $.plot(placeholder2, data2, {
+
+				series: {
+			        pie: {
+			            show: true,
+						tilt:0.8,
+						highlight: {
+							opacity: 0.25
+						},
+						stroke: {
+							color: '#fff',
+							width: 2
+						},
+						startAngle: 2
+
+			        }
+			    },
+			    legend: {
+			        show: true,
+					position: "ne",
+				    labelBoxBorderColor: null,
+					margin:[-30,15]
+			    }
+				,
+				grid: {
+					hoverable: true,
+					clickable: true
+				},
+				tooltip: true, //activate tooltip
+				tooltipOpts: {
+					content: "%s : %y.1",
+					shifts: {
+						x: -30,
+						y: -50
+					}
+				}
+
+			 });
+
+    	     var $tooltip = $("<div class='tooltip top in' style='display:none;'><div class='tooltip-inner'></div></div>").appendTo('body');
+			 placeholder.data('tooltip', $tooltip);
+			 var previousPoint = null;
+
+			 placeholder.on('plothover', function (event, pos, item) {
+				if(item) {
+					if (previousPoint != item.seriesIndex) {
+						previousPoint = item.seriesIndex;
+						var tip = item.series['label'] + " : " + Math.round(item.series['percent']*100)/100+'%';
+						$(this).data('tooltip').show().children(0).text(tip);
+					}
+					$(this).data('tooltip').css({top:pos.pageY + 10, left:pos.pageX + 10});
+				} else {
+					$(this).data('tooltip').hide();
+					previousPoint = null;
+				}
+			 });
+
+             var $tooltip2 = $("<div class='tooltip top in' style='display:none;'><div class='tooltip-inner'></div></div>").appendTo('body');
+			 placeholder2.data('tooltip', $tooltip2);
+			 var previousPoint2 = null;
+
+			 placeholder2.on('plothover', function (event, pos, item) {
+				if(item) {
+					if (previousPoint2 != item.seriesIndex) {
+						previousPoint2 = item.seriesIndex;
+						var tip = item.series['label'] + " : " + Math.round(item.series['percent']*100)/100+'%';
+						$(this).data('tooltip').show().children(0).text(tip);
+					}
+					$(this).data('tooltip').css({top:pos.pageY + 10, left:pos.pageX + 10});
+				} else {
+					$(this).data('tooltip').hide();
+					previousPoint2 = null;
+				}
+			 });
+    </script>
 {% endblock %}
 
 {% block titulo %}
@@ -18,20 +161,20 @@ Reports
 
 <div class="row"/>
     <div class="col-xs-12 title-block">
-        <h3>Al watan</h3>
+        <h3>{{ projectName }} - {{ projectType }}</h3>
     </div>
 </div>
 
 <div class="row date-filter border"/>
     <div class="col-xs-12">
-        <form class="form-inline" role="form">
+        <form action="." method="get" class="form-inline" role="form">
           <div class="form-group">
             <label for="fromDate">From:</label>
-            <input type="date" class="form-control" id="fromDate">
+            <input type="date" name="from" class="form-control" id="fromDate" value="{{ from|date_picker_format }}" >
           </div>
           <div class="form-group">
             <label for="toDate">To:</label>
-            <input type="date" class="form-control" id="toDate">
+            <input type="date" name="to" class="form-control" id="toDate" value="{{ to|date_picker_format }}">
           </div>
           <button type="submit" class="btn btn-success">Filter</button>
         </form>
@@ -43,58 +186,38 @@ Reports
         <thead style="background-color: #eaeaea">
           <tr>
             <th class="first-td">User</th>
-            <th>Development</th>
-            <th>Design</th>
-            <th>Bug Fix</th>
-            <th>Rework</th>
-            <th>Client Support</th>
-            <th>Management</th>
-            <th>Testing</th>
-            <th>Research</th>
-            <th>No Aplica</th>
+
+            {% for name in typeNames %}
+            <th>{{ name }}</th>
+            {% endfor %}
             <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="first-td">Sergio Cirasa</td>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>3</td>
-            <td>2</td>
-            <td>1</td>
-            <td>3</td>
-            <td>2</td>
-            <td>1</td>
-            <td class="last-td">10</td>
-          </tr>
-          <tr>
-            <td class="first-td">Sergio Cirasa</td>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>3</td>
-            <td>2</td>
-            <td>1</td>
-            <td>3</td>
-            <td>2</td>
-            <td>1</td>
-            <td class="last-td">10</td>
-          </tr>
-          <tr class="tr-gray">
-            <td class="first-td">Total</td>
-            <td>11</td>
-            <td>21</td>
-            <td>31</td>
-            <td>31</td>
-            <td>21</td>
-            <td>11</td>
-            <td>31</td>
-            <td>21</td>
-            <td>11</td>
-            <td class="last-td">40</td>
-          </tr>
+          {% for row in rows %}
+              <tr>
+                {% for item in row %}
+                    {% if forloop.first %}
+                        <td class="first-td">
+                    {% elif forloop.last %}
+                        <td class="last-td">
+                    {% else %}
+                        <td>
+                    {% endif %}
+                        {{ item }}</td>
+                {% endfor %}
+              </tr>
+          {% endfor %}
+             <tr class="tr-gray">
+                    <td class="first-td">Total</td>
+                    {% for item in totalRow %}
+                        {% if forloop.last %}
+                                <td class="last-td">{{ item }}</td>
+                        {% else %}
+                            <td>{{ item }}</td>
+                        {% endif %}
+                    {% endfor %}
+              </tr>
         </tbody>
       </table>
     </div>
@@ -102,12 +225,24 @@ Reports
 
 <div class="row" style="margin-top: 20px">
     <div class="col-xs-6">
-      <h3>Task</h3>
-      <div class="chart_div1"></div>
+        <div class="box box-solid box-primary">
+            <div class="box-header">
+                <h3 class="box-title"><i class="ion-pie-graph"></i> Task</h3>
+            </div>
+            <div class="box-body">
+                <div id="piechart-placeholder"></div>
+            </div>
+        </div><!-- /.box-->
     </div><!--/span-->
     <div class="col-xs-6">
-      <h3>Users</h3>
-      <div class="chart_div2"></div>
+        <div class="box box-solid box-primary">
+            <div class="box-header">
+                <h3 class="box-title"><i class="fa fa-bar-chart-o"></i> Users</h3>
+            </div>
+            <div class="box-body">
+                <div id="piechart-user"></div>
+            </div>
+        </div><!-- /.box-->
     </div><!--/span-->
 </div>
 

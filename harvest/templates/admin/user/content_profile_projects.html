@@ -5,6 +5,8 @@
 
 <input name="submenu" type="hidden" value="profile_projects">
 <input id="userId" name="id" type="hidden" value="{{ form.id.value|default:"" }}">
+
+{% if user.is_staff %}
 <div class="col-xs-12 well" style="margin-top:10px;">
     <div class="col-xs-8">
           <select id="projects" name="projects" data-placeholder="Select projects to assign..." class="chosen-select" multiple tabindex="6">
@@ -14,20 +16,24 @@
           </select>
     </div>
     <div class="col-xs-4">
-        <button id="assign-projects" type="submit" class="btn btn-success">Assign Projects</button>
+        <button id="assign-projects" style="height: 36px; margin-top: 1px" type="submit" class="btn btn-success">Assign Projects</button>
         <img id="assign-projects-loading" style="display: none" src="{{STATIC_URL}}img/loading.gif" width="16px" height="16px"/>
     </div>
 </div>
-
+{% endif %}
 <div class="row"/>
     <div class="col-xs-12 proyect-list">
         <table class="table" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
                 {% for project in userProjects %}
                 <tr id="{{ project.id }}">
                     <td class="decoration-none">
+                        {% if user.is_staff %}
                         <a href="javascript:removeProjectFromUser('{{ project.id }}','{{ form.id.value }}')">
                             <span class="glyphicon glyphicon-remove"></span>
                         <span class="project-link">{{ project.name|title }}</span></a>
+                        {% else %}
+                            <span class="project-link">{{ project.name|title }}</span></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

@@ -29,7 +29,9 @@
 {% endblock %}
 
 {% block sub-menu %}
-    {% include "general/submenu_manage.html" %}
+    {% if user.is_staff %}
+        {% include "general/submenu_manage.html" %}
+    {% endif %}
 {% endblock %}
 
 {% block titulo %}

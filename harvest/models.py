@@ -52,23 +52,22 @@ class Project(models.Model):
 class Task(models.Model):
 
     TASK_TYPE=(
-        ('Admin','Admin'),
         ('Bug Fix','Bug Fix'),
         ('Client Support','Client Support'),
         ('Development','Development'),
-        ('Graphic Design','Graphic Design'),
+        ('Design','Design'),
+        ('Management','Management'),
         ('Other','Other'),
-        ('Project Managment','Project Managment'),
         ('Research','Research'),
         ('Rework','Rework'),
         ('Testing','Testing'),
     )
 
-    user = models.OneToOneField(User)
-    project = models.OneToOneField(Project)
+    user = models.ForeignKey(User)
+    project = models.ForeignKey(Project)
     description = models.TextField(blank=False)
     type = models.CharField(max_length=30,choices=TASK_TYPE,blank=False)
-    duration = models.TimeField(blank=False)
+    duration = models.DecimalField(max_digits=5,decimal_places=2,blank=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
