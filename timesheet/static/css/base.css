@@ -753,7 +753,7 @@ font-size: 12px;
    margin-left: 4px;
    width: 100%;
 }
-.week label{
+.week a{
     height: 46px;
     width: 11%;
     color: #666;
@@ -765,6 +765,7 @@ font-size: 12px;
     width: 23%;
     line-height: 2.428571;
     background-color: #e0e0e0;
+    color: #333
 }
 
 .btn.active {

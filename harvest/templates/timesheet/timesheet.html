@@ -32,36 +32,23 @@ Timesheet
 
  <div class="row">
     <div class="col-xs-offset-1 col-xs-7">
-        <h2 class="title-date">Sunday <span>06 Apr</span></h2>
+        <h2 class="title-date">{{ currentDay|date:"l" }} <span>{{ currentDay|date:"d" }} {{ currentDay|date:"b" }}</span></h2>
     </div>
 
     <div class="col-xs-4" style="margin-bottom: 20px;">
         <div class="date-menu">
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default">
-                <input type="radio" name="options" id="backBtn">
+            <div class="btn-group">
+              <a href="/timesheet/day/{{ nextDay|date:"Y/m/d" }}" class="btn btn-default">
                 <span class="glyphicon glyphicon-chevron-left" style=""></span>
-              </label>
-              <label class="btn btn-default">
-                <input type="radio" name="options" id="todayBtn"> Today
-              </label>
-              <label class="btn btn-default">
-                <input type="radio" name="options" id="nextBtn">
+              </a>
+              <a href="/timesheet/day/{{ today|date:"Y/m/d" }}" class="btn btn-default {% if today == currentDay %}active{% endif %}">
+                Today
+              </a>
+              <a href="/timesheet/day/{{ previousDay|date:"Y/m/d" }}" class="btn btn-default">
                 <span class="glyphicon glyphicon-chevron-right" style=""></span>
-              </label>
+              </a>
             </div>
-            <a href="#" id="datePicker" data-date-format="yyyy-mm-dd" data-date-position="left" data-date="2012-02-20" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span></a>
-            <!--
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active">
-                <input type="radio" name="options" id="option1"> Day
-              </label>
-              <label class="btn btn-default">
-                <input type="radio" name="options" id="option2"> Week
-              </label>
-            </div>
-            <a href="#" id="new-entry" class="btn btn-default" ><span class="glyphicon glyphicon-user" style=""></span></a>
-            -->
+            <a href="#" id="datePicker" data-date-format="yyyy/mm/dd" data-date-position="left" data-date="{{ currentDay|date:"Y/m/d" }}" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span></a>
         </div>
     </div>
  </div>
@@ -79,38 +66,17 @@ Timesheet
 
         <div class="row">
            <div class="col-xs-12">
-               <div class="btn-group week" data-toggle="buttons">
-                  <label class="btn btn-default active">
-                    <input type="radio" name="options" id="option1"> M
-                    <div>0:00</div>
-                  </label>
-                  <label class="btn btn-default">
-                    <input type="radio" name="options" id="option2"> T
-                    <div>0:00</div>
-                  </label>
-                  <label class="btn btn-default">
-                    <input type="radio" name="options" id="option3"> W
-                    <div>0:00</div>
-                  </label>
-                  <label class="btn btn-default">
-                    <input type="radio" name="options" id="option4"> Th
-                    <div>0:00</div>
-                  </label>
-                  <label class="btn btn-default">
-                    <input type="radio" name="options" id="option5"> F
-                    <div>0:00</div>
-                  </label>
-                  <label class="btn btn-default">
-                    <input type="radio" name="options" id="option6"> S
-                    <div>0:00</div>
-                  </label>
-                  <label class="btn btn-default">
-                    <input type="radio" name="options" id="option7"> Su
-                    <div>0:00</div>
-                  </label>
-                  <label class="btn btn-default last">
-                    <input type="radio" name="options" id="option8"> Total 3:00
-                  </label>
+               <div class="btn-group week">
+                      {% for day in days %}
+                                <a href="/timesheet/day/{{ day.date|date:"Y/m/d" }}" class="btn btn-default {% if day.date == currentDay %}active{% endif %}" role="button">
+                                {{ day.title }}
+                                <div>{{ day.hours }}</div>
+                              </a>
+
+                      {% endfor %}
+                      <a class="btn btn-default last">
+                        Total {{ totalHours }}
+                      </a>
               </div>
           </div>
         </div>
@@ -118,35 +84,23 @@ Timesheet
         <div class="row">
             <div class="col-xs-12">
 
-                <ul class="manage-list">
-                    <li>
+                <ul id="tasks" class="manage-list">
+                    {% for task in tasks %}
+                    <li id="{{ task.id }}">
                       <div class="manage-list-item col disabled-hightlight">
                         <div class="col-xs-10 col-md-10 left left-block">
-                          <h3 >Project Name - (Design)</h3>
-                          <p>impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu</p>
+                          <h3 >{{ task.project.name }} - ({{ task.type }})</h3>
+                          <p>{{ task.description }}</p>
                         </div>
                         <div class="col-xs-2 col-md-2 right right-block">
-                          <h3>0.5</h3>
-                          <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#edit-entry-modal">
+                          <h3>{{ task.duration }}</h3>
+                          <button type="button" onclick="javascript:showEditModal('{{ task.id }}','{{ task.project.id }}','{{ task.type }}','{{ task.description }}','{{ task.duration }}')" class="btn btn-default btn-lg">
                              <span class="glyphicon glyphicon-pencil"></span>
                           </button>
                         </div>
                       </div>
                     </li>
-                    <li>
-                      <div class="manage-list-item col disabled-hightlight">
-                        <div class="col-xs-10 col-md-10 left left-block">
-                          <h3 >Project Name - (Design)</h3>
-                          <p>impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu Lorem impsu</p>
-                        </div>
-                        <div class="col-xs-2 col-md-2 right right-block">
-                          <h3>0.5</h3>
-                          <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#edit-entry-modal">
-                             <span class="glyphicon glyphicon-pencil"></span>
-                          </button>
-                        </div>
-                      </div>
-                    </li>
+                    {% endfor %}
                 </ul>
 
             </div>
@@ -160,12 +114,13 @@ Timesheet
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">
-                New Time Entry<span class="js-spent-at-display spent-at-display">Saturday, 17 May</span>
+                New Time Entry<span class="js-spent-at-display spent-at-display">{{ currentDay|date:"l, d b"|title }}</span>
             </h4>
           </div>
 
           <div class="modal-body">
             <form class="form-horizontal content_profile" role="form">
+                <input id="new-date" value="{{ currentDay|date:"Y/m/d" }}" type="hidden">
                 <div class="form-group" style="margin-bottom: 5px;">
                     <div class="col-sm-12">
                         <h4 class="modal-title">Project/Task</h4>
@@ -174,29 +129,25 @@ Timesheet
                 <div class="form-group">
                     <div class="col-sm-12">
                         <select id="new-project" class="form-control">
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
+                          {% for project in projects %}
+                          <option value="{{ project.id }}">{{ project.name }}</option>
+                          {% endfor %}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-12">
                         <select id="new-task" class="form-control">
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
+                          {% for type in tasksTypes %}
+                          <option value="{{ type.1 }}">{{ type.0 }}</option>
+                          {% endfor %}
                         </select>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: 0px">
                     <div class="col-sm-12">
-                      <textarea id="new-entry" class="form-control" placeholder="Notes (optional)"></textarea>
-                      <input type="text" id="new-time" placeholder="0.00" class="form-control" data-container="body" data-toggle="popover" data-placement="right" data-content="You can enter time as 1.5 or 1:30. We know both mean 1 hour and 30 minutes.">
+                      <textarea id="new-description" class="form-control" placeholder="Notes (optional)"></textarea>
+                      <span id="new-duration-content"><input type="text" id="new-duration" placeholder="0.00" class="form-control" data-container="body" data-toggle="popover" data-placement="right" data-content="You can enter time as 1.5 or 1:30. We know both mean 1 hour and 30 minutes."></span>
                     </div>
                 </div>
             </form>
@@ -204,7 +155,7 @@ Timesheet
           <div class="modal-footer">
               <div>
                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                 <button type="button" class="btn btn-primary">Save Entry</button>
+                 <button id="save" type="button" class="btn btn-primary">Save Entry</button>
               </div>
           </div>
         </div><!-- /.modal-content -->
@@ -217,12 +168,14 @@ Timesheet
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">
-                Edit Time Entry<span class="js-spent-at-display spent-at-display">Saturday, 17 May</span>
+                Edit Time Entry<span class="js-spent-at-display spent-at-display">{{ currentDay|date:"l, d b"|title }}</span>
             </h4>
           </div>
 
           <div class="modal-body">
             <form class="form-horizontal content_profile" role="form">
+                <input id="edit-taskId" type="hidden" value="">
+                <input id="edit-date" value="{{ currentDay|date:"Y/m/d" }}" type="hidden">
                 <div class="form-group" style="margin-bottom: 5px;">
                     <div class="col-sm-12">
                         <h4 class="modal-title">Project/Task</h4>
@@ -231,40 +184,36 @@ Timesheet
                 <div class="form-group">
                     <div class="col-sm-12">
                         <select id="edit-project" class="form-control">
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
+                          {% for project in projects %}
+                          <option value="{{ project.id }}">{{ project.name }}</option>
+                          {% endfor %}
                         </select>
                     </div>
                 </div>
                 <div id="edit-task" class="form-group">
                     <div class="col-sm-12">
-                        <select class="form-control">
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
+                        <select id="edit-type" class="form-control">
+                          {% for type in tasksTypes %}
+                          <option value="{{ type.1 }}">{{ type.0 }}</option>
+                          {% endfor %}
                         </select>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: 0px">
                     <div class="col-sm-12">
-                      <textarea id="edit-entry" class="form-control" placeholder="Notes (optional)"></textarea>
-                      <input type="text" id="edit-time" placeholder="0.00" class="form-control" data-container="body" data-toggle="popover" data-placement="right" data-content="You can enter time as 1.5 or 1:30. We know both mean 1 hour and 30 minutes.">
+                      <textarea id="edit-description" class="form-control" placeholder="Notes (optional)"></textarea>
+                      <span id="edit-duration-content"><input type="text" id="edit-duration" placeholder="0.00" class="form-control" data-container="body" data-toggle="popover" data-placement="right" data-content="You can enter time as 1.5 or 1:30. We know both mean 1 hour and 30 minutes."></span>
                     </div>
                 </div>
             </form>
           </div>
           <div class="modal-footer">
               <div style="float: left;">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Remove</button>
+                <button id="remove" type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Remove</button>
               </div>
               <div>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success">Update</button>
+                <button id="update" type="button" class="btn btn-success">Update</button>
               </div>
           </div>
         </div><!-- /.modal-content -->

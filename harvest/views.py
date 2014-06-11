@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response
 from harvest.forms import *
 from django.db.models import Q
 import json
+import time
 from datetime import timedelta, datetime, time
 from django.utils import timezone
 from django.db.models import Sum
@@ -72,6 +73,9 @@ def is_staff_or_current_user(user,userId):
 #-------------------------------------------------------------------------------------------------------------#
 
 # Error
+def error_400(request):
+    return render_to_response('error/400.html',context_instance=RequestContext(request))
+
 def error_403(request):
     return render_to_response('error/403.html',context_instance=RequestContext(request))
 
@@ -288,9 +292,40 @@ def project_report(request,projectId):
     return render_to_response('reports/project_report.html',{'projectName':project.name,'projectType':project.type,'typeNames':typeNames,'rows':rows,'totalRow':totalRow,'to':toDate,'from':fromDate,'taskChart':taskChart,'userChart':userChart},context_instance=RequestContext(request))
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
-def timesheet(request):
-    return render_to_response('timesheet/timesheet.html',context_instance=RequestContext(request))
+def timesheet(request,year='0', month='0', day='0'):
 
+    try:
+        strDate = year + "/" + month + "/" + day
+        currentDay = datetime.strptime(strDate,"%Y/%m/%d").date()
+    except:
+        currentDay = datetime.now().date()
+
+
+
+    some_day_last_week = currentDay - timedelta(days=7)
+    monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
+
+
+    days = []
+    titles = ['M','T','W','Th','F','S','Su']
+    totalHours = 0
+    for i in range(0,7):
+        date = monday_of_last_week + timedelta(days=7+i)
+        taskHours = Task.objects.filter(user=request.user,created=date).aggregate(Sum('duration'))["duration__sum"]
+        if not taskHours:
+            taskHours = '0:00'
+        else:
+            totalHours+=taskHours
+        days.insert(i,{'title':titles[i],'date':date,'hours':taskHours})
+
+    today = timezone.now().date()
+    nextDay = currentDay - timedelta(days=1)
+    previousDay = currentDay - timedelta(days=-1)
+
+    tasks = Task.objects.filter(user=request.user,created=currentDay)
+    userProjects = Project.objects.filter(Q(users__in=[request.user]), Q(is_active=1))
+
+    return render_to_response('timesheet/timesheet.html',{'projects':userProjects,'tasksTypes':Task.TASK_TYPE,'today':today,'nextDay':nextDay,'previousDay':previousDay,'days':days,'currentDay':currentDay,'totalHours':totalHours,'tasks':tasks},context_instance=RequestContext(request))
 
 
 #-------------------------------------------------------------------------------------------------------------#
@@ -512,6 +547,7 @@ def admin_archive_user(request, userId):
 @login_required
 @user_passes_test(user_is_staff,login_url='/error/404',redirect_field_name='')
 def admin_user_list(request):
+    print "entrooo"
     users = userList(request)
     return render_to_response('admin/user/user_list.html',{'users':users,"search":request.GET.get("search")},context_instance=RequestContext(request))
 
