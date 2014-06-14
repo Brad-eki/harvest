@@ -223,27 +223,29 @@ Reports
     </div>
 </div>
 
-<div class="row" style="margin-top: 20px">
-    <div class="col-xs-6">
-        <div class="box box-solid box-primary">
-            <div class="box-header">
-                <h3 class="box-title"><i class="ion-pie-graph"></i> Task</h3>
-            </div>
-            <div class="box-body">
-                <div id="piechart-placeholder"></div>
-            </div>
-        </div><!-- /.box-->
-    </div><!--/span-->
-    <div class="col-xs-6">
-        <div class="box box-solid box-primary">
-            <div class="box-header">
-                <h3 class="box-title"><i class="fa fa-bar-chart-o"></i> Users</h3>
-            </div>
-            <div class="box-body">
-                <div id="piechart-user"></div>
-            </div>
-        </div><!-- /.box-->
-    </div><!--/span-->
-</div>
+{% if userChart and taskChart%}
+    <div class="row" style="margin-top: 20px">
+        <div class="col-xs-6">
+            <div class="box box-solid box-primary">
+                <div class="box-header">
+                    <h3 class="box-title"><i class="ion-pie-graph"></i> Task</h3>
+                </div>
+                <div class="box-body">
+                    <div id="piechart-placeholder"></div>
+                </div>
+            </div><!-- /.box-->
+        </div><!--/span-->
+        <div class="col-xs-6">
+            <div class="box box-solid box-primary">
+                <div class="box-header">
+                    <h3 class="box-title"><i class="fa fa-bar-chart-o"></i> Users</h3>
+                </div>
+                <div class="box-body">
+                    <div id="piechart-user"></div>
+                </div>
+            </div><!-- /.box-->
+        </div><!--/span-->
+    </div>
+{% endif %}
 
 {% endblock %}

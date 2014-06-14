@@ -65,11 +65,11 @@ class Task(models.Model):
 
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
-    description = models.TextField(blank=False)
+    description = models.TextField()
     type = models.CharField(max_length=30,choices=TASK_TYPE,blank=False)
     duration = models.DecimalField(max_digits=5,decimal_places=2,blank=False)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField()
+    modified = models.DateTimeField()
 
     def __unicode__(self):
         return self.description

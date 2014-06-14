@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core import validators
 from django.contrib.auth.hashers import make_password
 from django.core.files import File
+import datetime
 
 #------------------------------------------------------------------------------------------------------------#
 
@@ -37,6 +38,17 @@ def localAvatarFile(photoId):
 
 def nameOfUserAvatar(userId):
     return "avatar_"+userId+".png"
+
+
+def setFormatToTime(time):
+    if not time:
+        return None
+
+    array = time.split(":")
+    if len(array) == 2:
+        min = int(array[1])
+        min = (min / 60)
+        return array[0]+str(min)
 
 #------------------------------------------------------------------------------------------------------------#
 class UserForm(forms.Form):
@@ -102,7 +114,6 @@ class EditUserForm(forms.Form):
         return validateUsername(self.cleaned_data.get('username'));
 
     def clean_email(self):
-        print "clean_email"
         userId = self.cleaned_data.get('id')
         user = User.objects.get(id=userId)
 
@@ -201,19 +212,58 @@ class ProjectForm(ModelForm):
 
 
 #------------------------------------------------------------------------------------------------------------#
-class TaskForm(forms.Form):
+class TaskForm(ModelForm):
     class Meta:
         model = Task
         fields = ('description', 'duration', 'type')
 
     id = forms.IntegerField(required=False)
+    projectId = forms.IntegerField(required=True)
+    date = forms.DateField(required=True,input_formats=['%Y-%m-%d','%Y/%m/%d'])
+    user = User()
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(TaskForm, self).__init__(*args, **kwargs)
+
+    def clean_projectId(self):
+        projectId = self.cleaned_data['projectId']
+        if projectId is None:
+            raise validators.ValidationError('Error')
+
+        project = Project.objects.get(id=self.cleaned_data['projectId'])
+
+        if project is None:
+            raise validators.ValidationError('Error')
+
+        return project
 
     def save(self):
-        print "save"
-        #TODO: completar
-        task = Task()
+        print "save: "
+        print self.cleaned_data.get('id')
+
+        if self.cleaned_data.get('id'):
+            task = Task.objects.get(id=self.cleaned_data['id'])
+        else:
+            task = Task()
+
+        project = self.cleaned_data['projectId']
+        task.project = project
+
+        task.user = self.user
         task.description = self.cleaned_data['description']
         task.duration = self.cleaned_data['duration']
         task.type = self.cleaned_data['type']
+
+        if not self.cleaned_data.get('id'):
+            modified = None
+            try:
+                modified = datetime.datetime.strptime(str(self.cleaned_data['date']) + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                raise ValueError("Incorrect data format")
+
+            task.modified = modified
+            task.created = modified
+
         task.save()
         return task

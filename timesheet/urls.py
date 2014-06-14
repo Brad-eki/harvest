@@ -40,6 +40,10 @@ urlpatterns = patterns('',
     url(r'^timesheet/',RedirectView.as_view(url='/error/405/'), name='timesheet_redirect'),
 
 
+    url(r'^manage/tasks/new/$','harvest.views.task'),
+    url(r'^manage/tasks/([0-9]*)/edit/$','harvest.views.task'),
+
+
     url(r'^manage/projects/$','harvest.views.admin_project_list'),
     url(r'^manage/projects/new$','harvest.views.admin_create_project'),
     url(r'^manage/projects/([0-9]*)/edit/$','harvest.views.edit_project'),

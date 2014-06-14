@@ -70,12 +70,12 @@ Timesheet
                       {% for day in days %}
                                 <a href="/timesheet/day/{{ day.date|date:"Y/m/d" }}" class="btn btn-default {% if day.date == currentDay %}active{% endif %}" role="button">
                                 {{ day.title }}
-                                <div>{{ day.hours }}</div>
+                                <div {% if day.date == currentDay %}id="today"{% endif %}>{{ day.hours }}</div>
                               </a>
 
                       {% endfor %}
                       <a class="btn btn-default last">
-                        Total {{ totalHours }}
+                        Total: <label id="totalHours">{{ totalHours }}</label>
                       </a>
               </div>
           </div>
@@ -137,7 +137,7 @@ Timesheet
                 </div>
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <select id="new-task" class="form-control">
+                        <select id="new-type" class="form-control">
                           {% for type in tasksTypes %}
                           <option value="{{ type.1 }}">{{ type.0 }}</option>
                           {% endfor %}
