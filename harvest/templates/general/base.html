@@ -34,6 +34,8 @@
               <li class="{% if request.path == "/welcome/" or request.path == "/"%}active{% endif %}"><a href="/welcome"><span class="glyphicon glyphicon-home"></span></a></li>
               {% if user.is_staff %}
               <li class="{% if "/reports/" in request.path%}active{% endif %}"><a href="/reports/users">Reports</a></li>
+              {% else %}
+              <li class="{% if "/reports/" in request.path%}active{% endif %}"><a href="/reports/users/{{ user.id }}/">Reports</a></li>
               {% endif %}
               <li class="{% if "/timesheet/" in request.path%}active{% endif %}"><a href="/timesheet">Timesheet</a></li>
               {% if user.is_staff %}
@@ -65,7 +67,7 @@
     </nav>
 
     <!-- Begin page content -->
-    <div class="container">
+    <div class="container" style="padding-top: 80px;">
     {% block content %}
     {% endblock %}
 
@@ -82,6 +84,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src='{{STATIC_URL}}js/jquery-2.1.0.js'></script>
     <script src='{{STATIC_URL}}bootstrap-3.1.1/js/bootstrap.js'></script>
+    <script src='{{STATIC_URL}}js/utils.js'></script>
     {% block javascript %}{% endblock %}
   </body>
 

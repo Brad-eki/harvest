@@ -35,7 +35,7 @@ Reports
             <li>
                 <h2 class="manage-list-header">Users ({{ users|length }})</h2>
             </li>
-
+<div class="scroll-content" data-remove-height="324">
             {% for user in users %}
                 <li id="{{ user.id }}"  class="user">
                   <div class="manage-list-item">
@@ -51,7 +51,7 @@ Reports
                   </div>
                 </li>
             {% endfor %}
-
+            </div>
         </ul>
 
     </div>

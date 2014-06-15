@@ -35,17 +35,19 @@ Reports
             <li>
                 <h2 class="manage-list-header">Projects ({{ projects|length }})</h2>
             </li>
-            {% for project in projects %}
-                <li id="{{ project.id }}" class="project">
-                  <div class="manage-list-item">
-                    <img  class="icon" src="{{STATIC_URL}}img/type/{{ project.type|clean_str|default:"Other" }}.png">
-                    <div style="display: inline-block;">
-                      <h3>{{ project.name|title }} {% if project.client %} - {{ project.client|title }}{% endif %}</h3>
-                      <p>{{ project.type }}</p>
-                    </div>
-                  </div>
-                </li>
-            {% endfor %}
+            <div class="scroll-content" data-remove-height="254">
+                {% for project in projects %}
+                    <li id="{{ project.id }}" class="project">
+                      <div class="manage-list-item">
+                        <img  class="icon" src="{{STATIC_URL}}img/type/{{ project.type|clean_str|default:"Other" }}.png">
+                        <div style="display: inline-block;">
+                          <h3>{{ project.name|title }} {% if project.client %} - {{ project.client|title }}{% endif %}</h3>
+                          <p>{{ project.type }}</p>
+                        </div>
+                      </div>
+                    </li>
+                {% endfor %}
+            </div>
         </ul>
     </div>
 </div>

@@ -28,7 +28,11 @@ Reports
 
 <div class="row"/>
     <div class="col-xs-8 title-block">
-        <h3>Sergio's Task:</h3>
+        {% if user.first_name %}
+            <h3>{{ user.first_name|title }}'s Task:</h3>
+        {% else %}
+            <h3>{{ user.username|title }}'s Task:</h3>
+        {% endif %}
     </div>
 </div>
 
@@ -72,19 +76,21 @@ Reports
                 <p style="float: right;"><strong>Total:</strong> {{ total|decimal_to_time }}</p>
                 </div>
             </li>
-            {% for task in tasks %}
-            <li>
-              <div class="manage-list-item col">
-                <div class="col-xs-10 col-md-10 left">
-                  <h3>{{ task.description }}</h3>
-                  <p>{{ task.project.name }} - {{ task.modified }}</p>
-                </div>
-                <div class="col-xs-2 col-md-2 right">
-                  <h3> {{ task.duration }} hs</h3>
-                </div>
-              </div>
-            </li>
-            {% endfor %}
+            <div class="scroll-content" data-remove-height="330">
+                {% for task in tasks %}
+                <li>
+                  <div class="manage-list-item col">
+                    <div class="col-xs-10 col-md-10 left">
+                      <h3>{{ task.description }}</h3>
+                      <p>{{ task.project.name }} - {{ task.type }} - {{ task.modified }}</p>
+                    </div>
+                    <div class="col-xs-2 col-md-2 right">
+                      <h3> {{ task.duration }} hs</h3>
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+            </div>
         </ul>
 
     </div>

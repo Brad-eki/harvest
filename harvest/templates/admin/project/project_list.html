@@ -30,7 +30,7 @@ Manage Projects
 </div>
 
 
-<div class="row" style="margin-top: 10px"/>
+<div class="row" style="margin-top: 10px;  margin-bottom: 2px;"/>
     <div class="col-xs-6">
         <a href="/manage/projects/new" class="btn btn-success add-button"><span class="glyphicon glyphicon-plus"></span>Create Project</a>
     </div>
@@ -47,7 +47,7 @@ Manage Projects
             <li>
                 <h2 id="projects-count" class="manage-list-header">Projects ({{ projects|length }})</h2>
             </li>
-
+            <div class="scroll-content" data-remove-height="292">
             {% for project in projects %}
             <li id="{{ project.id }}" class="project">
               <div class="manage-list-item">
@@ -62,7 +62,7 @@ Manage Projects
               </div>
             </li>
             {% endfor %}
-
+            </div>
         </ul>
 
     </div>

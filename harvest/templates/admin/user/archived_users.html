@@ -29,20 +29,22 @@ Archived Users
             <li>
                 <h2 id="users-count" class="manage-list-header">Users ({{ users|length }})</h2>
             </li>
-            {% for user in users %}
-            <li id="{{ user.id }}" class="archived">
-              <div class="manage-list-item">
-                <a href="javascript:archiveUser({{ user.id }},'False')" class="reactivate-link"></a>
-                <div style="display: inline-block;">
-                 {% if user.first_name %}
-                    <h3>{{ user.first_name }} {{ user.last_name }}</h3>
-                  {% else %}
-                    <h3>{{ user.username }}</h3>
-                  {% endif %}
-                </div>
-              </div>
-            </li>
-            {% endfor %}
+            <div class="scroll-content" data-remove-height="275">
+                {% for user in users %}
+                <li id="{{ user.id }}" class="archived">
+                  <div class="manage-list-item">
+                    <a href="javascript:archiveUser({{ user.id }},'False')" class="reactivate-link"></a>
+                    <div style="display: inline-block;">
+                     {% if user.first_name %}
+                        <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                      {% else %}
+                        <h3>{{ user.username }}</h3>
+                      {% endif %}
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+            </div>
         </ul>
 
     </div>

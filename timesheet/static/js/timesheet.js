@@ -1,24 +1,16 @@
 /**
  * Created by sergio on 31/03/14.
  */
-    function getCookie(name)
+
+    $(window).bind('resize', function(e)
     {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
+        //defined in utils.js
+        updateScrollContentHeight(".scroll-content");
+    });
 
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
+    jQuery( document ).ready(function( $ ) {
+        updateScrollContentHeight(".scroll-content");
+    });
 
     $('#datePicker').datepicker();
     $("#datePicker").on('changeDate', function (ev)   {
@@ -47,23 +39,6 @@
 
         $("#totalHours").text(""+total.toFixed(2));
         $("#today").text(""+today.toFixed(2));
-    }
-
-    function validateTime(time){
-        var reg = new RegExp("^[0-9]+[\.\:]?[0-9]+$");
-        if(time.length>0 && reg.test(time))
-            return true;
-        return false;
-    }
-
-    function convertTime(time){
-        array = time.split(":");
-
-        if(array.length==2){
-            time = ""+(parseFloat(array[0])+parseFloat(array[1]/60));
-        }
-
-        return time;
     }
 
     function removeProjectFromUser(taskId){
@@ -130,6 +105,7 @@
             taskType=$( "#new-type option:selected" ).text();
             description=$("#new-description").val();
             duration=convertTime($("#new-duration").val());
+            duration = ""+parseFloat(duration).toFixed(2);
             date = $("#new-date").val();
             projectId = $("#new-project").val();
 
@@ -152,11 +128,10 @@
                       updateDurationInTheNavigation(0.0, parseFloat(duration));
                       addTaskToList(projectName,taskType,description,duration,projectId,taskId)
                       $('#new-entry-modal').modal('hide');
-                      $("#new-project").val("");
-                      $("#new-task").val("");
                       $("#new-description").val("");
                       $("#new-duration").val("");
                       $("#new-duration-content").removeClass("has-error");
+                      $(".scroll-content").animate({ scrollTop: $(".scroll-content").height() }, 1000);
                   }
                 }
             });
@@ -189,6 +164,7 @@
         taskType=$( "#edit-task option:selected" ).text();
         description=$("#edit-description").val();
         duration=convertTime($("#edit-duration").val());
+        duration = ""+parseFloat(duration).toFixed(2);
         date = $("#edit-date").val();
         taskId = $("#edit-taskId").val();
 

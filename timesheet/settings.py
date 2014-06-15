@@ -149,4 +149,5 @@ STATICFILES_DIRS = (
      os.path.join(BASE_DIR,'timesheet/static'),
 )
 
+
 STATIC_AVATAR_ROOT = os.path.join(BASE_DIR,'timesheet/static/img/avatar/')

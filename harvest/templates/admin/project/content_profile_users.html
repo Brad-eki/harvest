@@ -25,21 +25,23 @@
 
 <div class="row"/>
     <div class="col-xs-12 user-list">
-        <table class="table" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
-                {% for user in projectUsers %}
-                <tr id="{{ user.id }}">
-                    <td class="decoration-none">
-                        <a href="javascript:removeUserFromProject('{{ user.id }}','{{ form.id.value }}')">
-                        <span class="glyphicon glyphicon-remove"></span>
-                        {% if user.first_name %}
-                            <span class="project-link">{{ user.first_name|title }} {{ user.last_name|title }}</span>
-                        {% else %}
-                            <span class="project-link">{{ user.username|title }}</span>
-                        {% endif %}
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-          </table>
+        <div class="scroll-content" data-remove-height="324">
+            <table class="table" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
+                    {% for user in projectUsers %}
+                    <tr id="{{ user.id }}">
+                        <td class="decoration-none">
+                            <a href="javascript:removeUserFromProject('{{ user.id }}','{{ form.id.value }}')">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            {% if user.first_name %}
+                                <span class="project-link">{{ user.first_name|title }} {{ user.last_name|title }}</span>
+                            {% else %}
+                                <span class="project-link">{{ user.username|title }}</span>
+                            {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+            </table>
+        </div>
     </div>
 </div>

@@ -21,6 +21,7 @@ import array
 #------------------------Helper Methods-----------------------------------------------------------------------#
 def userList(request):
     users = None
+
     if request.method == 'GET' and request.GET.get("search") != None:
         q = request.GET.get("search")
         users = User.objects.filter(
@@ -45,13 +46,29 @@ def projectList(request):
     projects = None
     if request.method == 'GET' and request.GET.get("search") != None:
         q = request.GET.get("search")
-        projects = Project.objects.filter(
-            Q(is_active=1),
-            Q(name__icontains=q) | Q(type__icontains=q) | Q(client__icontains=q)
-        )
+
+        if request.user.is_staff:
+            print "staff"
+            projects = Project.objects.filter(
+                Q(is_active=1),
+                Q(name__icontains=q) | Q(type__icontains=q) | Q(client__icontains=q)
+            ).order_by('name')
+        else:
+            print "NO staff"
+            projects = Project.objects.filter(
+                Q(is_active=1),
+                Q(users__in=[request.user]),
+                Q(name__icontains=q) | Q(type__icontains=q) | Q(client__icontains=q)
+            ).order_by('name')
 
     else:
-        projects = Project.objects.filter(is_active=1).order_by('name')
+        if request.user.is_staff:
+            projects = Project.objects.filter(is_active=1).order_by('name')
+        else:
+            projects = Project.objects.filter(
+                Q(is_active=1),
+                Q(users__in=[request.user]),
+            ).order_by('name')
 
     return projects
 
@@ -104,7 +121,7 @@ def error_503(request):
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 def task(request, taskId=None):
-
+    print str(request.POST)
     if request.method == 'DELETE':
         task = Task.objects.get(id=taskId)
         if task:
@@ -142,12 +159,7 @@ def home(request):
     monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
     monday_of_this_week = monday_of_last_week + timedelta(days=7)
 
-    print "some_day_last_week: " + str(some_day_last_week)
-    print "monday_of_last_week: " + str(monday_of_last_week)
-    print "monday_of_this_week: " + str(monday_of_this_week)
-
     now = datetime.now().replace(microsecond=0)
-    print "mes: " + str(now.month)
 
     today = Task.objects.filter(user=request.user).filter(modified=now.date()).aggregate(Sum('duration'))[
         "duration__sum"]
@@ -194,7 +206,6 @@ def reports_user_list(request):
 
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
-@user_passes_test(user_is_staff, login_url='/error/404', redirect_field_name='')
 def reports_project_list(request):
     projects = projectList(request)
     return render_to_response('reports/project_list.html', {'projects': projects, "search": request.GET.get("search")},
@@ -209,68 +220,71 @@ def user_report(request, userId):
 
     now = datetime.now()
     lastWeek = now - timedelta(days=7)
-    fromDate = None
-    toDate = None
+    fromStrDate = None
+    toStrDate = None
     selectedProjects = None
     anUser = User.objects.get(id=userId)
+    users = [anUser]
 
     if request.GET.get("from"):
-        fromDate = request.GET.get("from")
+        fromStrDate = request.GET.get("from")
     else:
-        fromDate = str(lastWeek.year) + "-" + str(lastWeek.month) + "-" + str(lastWeek.day)
+        fromStrDate = str(lastWeek.year) + "-" + str(lastWeek.month) + "-" + str(lastWeek.day)
 
     if request.GET.get("to"):
-        toDate = request.GET.get("to")
+        toStrDate = request.GET.get("to")
     else:
-        toDate = str(now.year) + "-" + str(now.month) + "-" + str(now.day)
+        toStrDate = str(now.year) + "-" + str(now.month) + "-" + str(now.day)
 
     if request.GET.get("projects"):
         selectedProjects = request.GET.getlist("projects")
     else:
-        tasks = Task.objects.filter(user=request.user).order_by('-modified')
+        tasks = Task.objects.filter(user=anUser).order_by('-modified')
         if tasks:
             selectedProjects = [str(tasks[0].project.id)]
         else:
             selectedProjects = None
-            fromDate = None
-            toDate = None
+            fromStrDate = None
+            toStrDate = None
 
-    users = [anUser]
+
     projects = Project.objects.filter(Q(users__in=users), Q(is_active=1))
+    fromDate = datetime.strptime(fromStrDate, "%Y-%m-%d").date()
+    toDate = datetime.strptime(toStrDate, "%Y-%m-%d").date()
 
     tasks = None
     total = 0.0
     if selectedProjects:
         tasks = Task.objects.filter(Q(user=anUser, project__in=selectedProjects)).filter(
-            modified__range=[fromDate, toDate])
+            modified__range=(datetime.combine(fromDate, time.min), datetime.combine(toDate, time.max)))
+
         for task in tasks:
             total += float(task.duration)
 
     return render_to_response('reports/user_report.html',
-                              {'tasks': tasks, "total": total, 'projects': projects, 'to': toDate, 'from': fromDate,
+                              {'tasks': tasks, "total": total, 'projects': projects, 'to': toStrDate, 'from': fromStrDate,
                                'selectedProjects': selectedProjects}, context_instance=RequestContext(request))
 
 
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
-@user_passes_test(user_is_staff, login_url='/error/404', redirect_field_name='')
 def project_report(request, projectId):
     project = Project.objects.get(id=projectId)
     users = User.objects.filter(projects__in=[project])
-    fromDate = None
-    toDate = None
+    fromStrDate = None
+    toStrDate = None
     now = datetime.now()
 
     if request.GET.get("from"):
-        fromDate = request.GET.get("from")
+        fromStrDate = request.GET.get("from")
     else:
         created = project.created
-        fromDate = str(created.year) + "-" + str(created.month) + "-" + str(created.day)
+        fromStrDate = str(created.year) + "-" + str(created.month) + "-" + str(created.day)
 
     if request.GET.get("to"):
-        toDate = request.GET.get("to")
+        toStrDate = request.GET.get("to")
     else:
-        toDate = str(now.year) + "-" + str(now.month) + "-" + str(now.day)
+        toStrDate = str(now.year) + "-" + str(now.month) + "-" + str(now.day)
 
     typeNames = []
     rows = []
@@ -285,6 +299,8 @@ def project_report(request, projectId):
 
     totalRow.insert(i, 0)  #Total
     lastIndex = len(totalRow) - 1
+    fromDate = datetime.strptime(fromStrDate, "%Y-%m-%d").date()
+    toDate = datetime.strptime(toStrDate, "%Y-%m-%d").date()
 
     for aUser in users:
         row = []
@@ -301,7 +317,7 @@ def project_report(request, projectId):
         total = 0
         for type in typeNames:
             hours = Task.objects.filter(user=aUser, project=project, type=type).filter(
-                modified__range=[fromDate, toDate]).aggregate(Sum('duration'))["duration__sum"]
+               modified__range=(datetime.combine(fromDate, time.min), datetime.combine(toDate, time.max))).aggregate(Sum('duration'))["duration__sum"]
             if hours == None:
                 hours = 0
             row.insert(i, hours)
@@ -347,7 +363,7 @@ def project_report(request, projectId):
 
     return render_to_response('reports/project_report.html',
                               {'projectName': project.name, 'projectType': project.type, 'typeNames': typeNames,
-                               'rows': rows, 'totalRow': totalRow, 'to': toDate, 'from': fromDate,
+                               'rows': rows, 'totalRow': totalRow, 'to': toStrDate, 'from': fromStrDate,
                                'taskChart': taskChart, 'userChart': userChart},
                               context_instance=RequestContext(request))
 
@@ -537,7 +553,6 @@ def edit_user_profile(request, userId):
     if not is_staff_or_current_user(request.user, userId):
         return HttpResponseRedirect("/manage/users/" + str(request.user.id) + "/edit/")
 
-    print "siguio"
     users = User.objects.filter(id=userId)
     user = users[0]
     userProjects = Project.objects.filter(Q(users__in=users), Q(is_active=1))
@@ -556,7 +571,7 @@ def edit_user_profile(request, userId):
                                      'last_name': user.last_name, 'email': user.email, 'is_staff': user.is_staff,
                                      'thumbnail': user.thumbnail})
         return render_to_response('admin/user/edit_profile.html',
-                                  {'form': form, 'userProjects': userProjects, 'projects': projects},
+                                  {'form': form, 'userProjects': userProjects, 'projects': projects, 'passwordChangedSuccesful': 1, 'submenu': request.POST.get('submenu')},
                                   context_instance=RequestContext(request))
 
     elif request.POST:

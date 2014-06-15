@@ -23,20 +23,22 @@
 {% endif %}
 <div class="row"/>
     <div class="col-xs-12 proyect-list">
-        <table class="table" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
-                {% for project in userProjects %}
-                <tr id="{{ project.id }}">
-                    <td class="decoration-none">
-                        {% if user.is_staff %}
-                        <a href="javascript:removeProjectFromUser('{{ project.id }}','{{ form.id.value }}')">
-                            <span class="glyphicon glyphicon-remove"></span>
-                        <span class="project-link">{{ project.name|title }}</span></a>
-                        {% else %}
+        <div class="scroll-content" data-remove-height="324">
+            <table class="table" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
+                    {% for project in userProjects %}
+                    <tr id="{{ project.id }}">
+                        <td class="decoration-none">
+                            {% if user.is_staff %}
+                            <a href="javascript:removeProjectFromUser('{{ project.id }}','{{ form.id.value }}')">
+                                <span class="glyphicon glyphicon-remove"></span>
                             <span class="project-link">{{ project.name|title }}</span></a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-          </table>
+                            {% else %}
+                                <span class="project-link">{{ project.name|title }}</span></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+              </table>
+          </div>
     </div>
 </div>

@@ -2,28 +2,22 @@
  * Created by sergio on 27/03/14.
  */
 
-function getCookie(name)
-{
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
 
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+$(window).bind('resize', function(e)
+{
+    //defined in utils.js
+    updateScrollContentHeight(".scroll-content");
+});
+
+jQuery( document ).ready(function( $ ) {
+    updateScrollContentHeight(".scroll-content");
+});
+
 
 function archiveUser(userId, archive){
     $("#"+userId).remove();
 
-    var count = $(".manage-list").children().length - 1;
+    var count = $(".scroll-content").children().length;
     if(count>0)
         $("#users-count").text("Users ("+count+")");
     else $("#users-count").text("Users (0)");
@@ -181,10 +175,6 @@ $("#password_confirmation").keyup(function() {
     notifyIfPasswordsMach();
 });
 
-function isEmail(email) {
-  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-  return regex.test(email);
-}
 
 function validatePassword(){
     var est1 = password_validation.check_confirmation_match();
@@ -238,7 +228,6 @@ $("#reset-password").click(function() {
         $("#reset-password-loading").show(300);
         $("#alert-password-success").show(300);
         $("#alert-password-error").hide(300);
-        //TODO: Llamar al WS de cambio de password
     }else{
         $("#reset-password-loading").hide(300);
         $("#alert-password-success").hide(300);

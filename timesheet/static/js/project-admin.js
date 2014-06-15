@@ -2,23 +2,15 @@
  * Created by sergio on 31/03/14.
  */
 
-function getCookie(name)
+$(window).bind('resize', function(e)
 {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
+    //defined in utils.js
+    updateScrollContentHeight(".scroll-content");
+});
 
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+jQuery( document ).ready(function( $ ) {
+    updateScrollContentHeight(".scroll-content");
+});
 
 $(".project").click(function(){
     window.location="/manage/projects/"+$(this).attr('id')+"/edit/";
@@ -27,7 +19,7 @@ $(".project").click(function(){
 function archiveProject(projectId, archive){
     $("#"+projectId).remove();
 
-    var count = $(".manage-list").children().length - 1;
+    var count = $(".scroll-content").children().length;
     if(count>0)
         $("#projects-count").text("Projects ("+count+")");
     else $("#projects-count").text("Projects (0)");

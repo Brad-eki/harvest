@@ -8,16 +8,23 @@ body {
 	margin-bottom:60px;
 	background-color:#FFF;
 }
+
+.scroll-content
+{
+    overflow:auto;
+}
+
 .btn{
     outline: none !important;
 }
 #footer {
-	position:absolute;
+	position:fixed;
 	bottom:0;
 	width:100%;
 	/* Set the fixed height of the footer here */
 	height:60px;
 	background-color:#f5f5f5;
+    z-index: 10;
 }
 @media (min-width:1200px) {
 	.container {
@@ -88,7 +95,6 @@ code {
 .navbar-default {
 	background-color:#0073b7 /*#1496c8*/;
 	box-shadow:0 1px 5px rgba(0,0,0,0.2);
-	position:relative;
 	width:100%;
 	min-height:40px;
 	border:0;
@@ -240,6 +246,9 @@ code {
 	font-size:13px;
 	width: 100%;
     -webkit-font-smoothing: antialiased;
+    margin-top: 48px;
+    position: fixed;
+    z-index: 10;
 }
 /* Nav links */
 .sub-nav-item {
@@ -312,11 +321,29 @@ code {
 	line-height:16px;
 	margin:0 0 5px 0;
 }
+
 .side-menu .menu-items {
-	background:url(../img/leftmenu-background.gif) no-repeat scroll 100% bottom;
-	width:100%;
-	padding-bottom:300px
+    background:url(../img/leftmenu-background.gif) no-repeat scroll 100% bottom;
+    width:100%;
+    padding-bottom:160px
 }
+
+@media (max-height:530px) {
+    .side-menu .menu-items {
+        background:url(../img/leftmenu-background.gif) no-repeat scroll 100% bottom;
+        width:100%;
+        padding-bottom:130px
+    }
+}
+
+@media (max-height:500px) {
+    .side-menu .menu-items {
+        background:url(../img/leftmenu-background.gif) no-repeat scroll 100% bottom;
+        width:100%;
+        padding-bottom:110px
+    }
+}
+
 .side-menu .menu-items ul {
 	list-style:none;
 	margin:0px 2px 0 0;

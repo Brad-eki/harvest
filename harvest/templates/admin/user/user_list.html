@@ -29,7 +29,7 @@ Manage Users
     </div>
 </div>
 
-<div class="row" style="margin-top: 10px"/>
+<div class="row" style="margin-top: 10px; margin-bottom: 2px;"/>
     <div class="col-xs-6">
         <a href="/manage/users/new" class="btn btn-success add-button"><span class="glyphicon glyphicon-plus"></span>Create User</a>
     </div>
@@ -46,6 +46,7 @@ Manage Users
             <li>
                 <h2 id="users-count" class="manage-list-header">Users ({{ users|length }})</h2>
             </li>
+            <div class="scroll-content" data-remove-height="292">
             {% for user in users %}
             <li id="{{ user.id }}"  class="user">
               <div class="manage-list-item">
@@ -67,6 +68,7 @@ Manage Users
               </div>
             </li>
             {% endfor %}
+            </div>
         </ul>
 
     </div>

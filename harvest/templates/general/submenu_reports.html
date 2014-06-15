@@ -1,10 +1,13 @@
-
 <div class="sub-navbar">
     <div class="container">
       <nav class="sub-nav">
-        <a href="/reports/users/" class="sub-nav-item {% if "/reports/users/" in request.path%}active{% endif %}">Users</a>
+        {% if user.is_staff %}
+            <a href="/reports/users/" class="sub-nav-item {% if "/reports/users/" in request.path%}active{% endif %}">Users</a>
+        {% else %}
+            <a href="/reports/users/{{ user.id }}/" class="sub-nav-item {% if "/reports/users/" in request.path%}active{% endif %}">Users</a>
+        {% endif %}
         <a href="/reports/projects/" class="sub-nav-item {% if "/reports/projects/" in request.path%}active{% endif %}">Projects</a>
       </nav>
     </div>
 </div>
-
+<div style="height: 39px"></div>

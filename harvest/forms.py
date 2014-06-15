@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from django.core import validators
 from django.contrib.auth.hashers import make_password
 from django.core.files import File
-import datetime
+from datetime import timedelta, datetime, time
+import math
 
 #------------------------------------------------------------------------------------------------------------#
 
@@ -239,8 +240,6 @@ class TaskForm(ModelForm):
         return project
 
     def save(self):
-        print "save: "
-        print self.cleaned_data.get('id')
 
         if self.cleaned_data.get('id'):
             task = Task.objects.get(id=self.cleaned_data['id'])
@@ -258,7 +257,10 @@ class TaskForm(ModelForm):
         if not self.cleaned_data.get('id'):
             modified = None
             try:
-                modified = datetime.datetime.strptime(str(self.cleaned_data['date']) + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
+                time = datetime.now().time().strftime("%H:%M:%S")
+                print time
+                strDate = str(self.cleaned_data['date']) +" "+time
+                modified = datetime.strptime(strDate, '%Y-%m-%d %H:%M:%S')
             except ValueError:
                 raise ValueError("Incorrect data format")
 
