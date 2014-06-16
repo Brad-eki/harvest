@@ -124,7 +124,8 @@
                 complete : function(jqXHR, status) {
                 //jqXHR.responseJSON
                   if(jqXHR.status==200){
-                      taskId = "1"
+                      obj = jqXHR.responseJSON;
+                      taskId = obj['taskId'];
                       updateDurationInTheNavigation(0.0, parseFloat(duration));
                       addTaskToList(projectName,taskType,description,duration,projectId,taskId)
                       $('#new-entry-modal').modal('hide');

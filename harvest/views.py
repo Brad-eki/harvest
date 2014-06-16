@@ -13,12 +13,21 @@ from django.db.models import Q
 import json
 import time
 from datetime import timedelta, datetime, time
+from django.utils.timezone import localtime
 from django.utils import timezone
 from django.db.models import Sum
 import array
 
 #-------------------------------------------------------------------------------------------------------------#
 #------------------------Helper Methods-----------------------------------------------------------------------#
+def last_report(user):
+    tasks = Task.objects.filter(user=user).order_by('-modified')
+    if tasks:
+        return tasks[0].date
+        #.strftime('%d %b %Y')
+    else:
+        return None
+
 def userList(request):
     users = None
 
@@ -28,16 +37,11 @@ def userList(request):
             Q(is_active=1),
             Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q)
         )
-
     else:
         users = User.objects.filter(is_active=1).order_by('username')
 
     for user in users:
-        tasks = Task.objects.filter(user=user).order_by('-modified')
-        if tasks:
-            user.last_report = tasks[0].modified.strftime('%d %b %Y %H:%M')
-        else:
-            user.last_report = "-"
+        user.last_report = last_report(user)
 
     return users
 
@@ -54,7 +58,6 @@ def projectList(request):
                 Q(name__icontains=q) | Q(type__icontains=q) | Q(client__icontains=q)
             ).order_by('name')
         else:
-            print "NO staff"
             projects = Project.objects.filter(
                 Q(is_active=1),
                 Q(users__in=[request.user]),
@@ -121,7 +124,6 @@ def error_503(request):
 #-------------------------------------------------------------------------------------------------------------#
 @login_required
 def task(request, taskId=None):
-    print str(request.POST)
     if request.method == 'DELETE':
         task = Task.objects.get(id=taskId)
         if task:
@@ -136,7 +138,7 @@ def task(request, taskId=None):
 
         if form.is_valid():  # All validation rules pass
             task = form.save();
-            return HttpResponse(json.dumps("{'taskId':'"+str(task.id)+"'}"), content_type="application/json")
+            return HttpResponse(json.dumps({"taskId":str(task.id)}), content_type="application/json")
         else:
             print form.errors
             return HttpResponse(json.dumps("{'error':'unexpected error'}"), content_type="application/json")
@@ -161,29 +163,29 @@ def home(request):
 
     now = datetime.now().replace(microsecond=0)
 
-    today = Task.objects.filter(user=request.user).filter(modified=now.date()).aggregate(Sum('duration'))[
+    today = Task.objects.filter(user=request.user).filter(date=now.date()).aggregate(Sum('duration'))[
         "duration__sum"]
     if not today:
         today = '0'
 
-    week = Task.objects.filter(user=request.user).filter(modified__range=[monday_of_this_week, now.date()]).aggregate(
+    week = Task.objects.filter(user=request.user).filter(date__range=[monday_of_this_week, now.date()]).aggregate(
         Sum('duration'))["duration__sum"]
     if not week:
         week = '0'
 
-    month = Task.objects.filter(user=request.user).filter(modified__month=6).aggregate(Sum('duration'))["duration__sum"]
+    month = Task.objects.filter(user=request.user).filter(date__month=6).aggregate(Sum('duration'))["duration__sum"]
 
     if not month:
         month = '0'
 
-    year = Task.objects.filter(user=request.user).filter(modified__year=now.year).aggregate(Sum('duration'))[
+    year = Task.objects.filter(user=request.user).filter(date__year=now.year).aggregate(Sum('duration'))[
         "duration__sum"]
     if not year:
         year = '0'
 
     i = 1
     for aMonth in allMonths:
-        hours = Task.objects.filter(user=request.user).filter(modified__month=i).aggregate(Sum('duration'))[
+        hours = Task.objects.filter(user=request.user).filter(date__month=i).aggregate(Sum('duration'))[
             "duration__sum"]
         i += 1
         if not hours:
@@ -222,7 +224,7 @@ def user_report(request, userId):
     lastWeek = now - timedelta(days=7)
     fromStrDate = None
     toStrDate = None
-    selectedProjects = None
+    selectedProjects = []
     anUser = User.objects.get(id=userId)
     users = [anUser]
 
@@ -243,10 +245,9 @@ def user_report(request, userId):
         if tasks:
             selectedProjects = [str(tasks[0].project.id)]
         else:
-            selectedProjects = None
-            fromStrDate = None
-            toStrDate = None
-
+            projects = Project.objects.filter(Q(users__in=users)).order_by("-created")
+            if projects:
+                selectedProjects = [projects[0].id]
 
     projects = Project.objects.filter(Q(users__in=users), Q(is_active=1))
     fromDate = datetime.strptime(fromStrDate, "%Y-%m-%d").date()
@@ -254,13 +255,15 @@ def user_report(request, userId):
 
     tasks = None
     total = 0.0
+    print selectedProjects
     if selectedProjects:
         tasks = Task.objects.filter(Q(user=anUser, project__in=selectedProjects)).filter(
-            modified__range=(datetime.combine(fromDate, time.min), datetime.combine(toDate, time.max)))
-
+            date__range=(fromDate, toDate))
+        print tasks
         for task in tasks:
             total += float(task.duration)
 
+    print selectedProjects
     return render_to_response('reports/user_report.html',
                               {'tasks': tasks, "total": total, 'projects': projects, 'to': toStrDate, 'from': fromStrDate,
                                'selectedProjects': selectedProjects}, context_instance=RequestContext(request))
@@ -317,7 +320,7 @@ def project_report(request, projectId):
         total = 0
         for type in typeNames:
             hours = Task.objects.filter(user=aUser, project=project, type=type).filter(
-               modified__range=(datetime.combine(fromDate, time.min), datetime.combine(toDate, time.max))).aggregate(Sum('duration'))["duration__sum"]
+               date__range=(fromDate, toDate)).aggregate(Sum('duration'))["duration__sum"]
             if hours == None:
                 hours = 0
             row.insert(i, hours)
@@ -385,7 +388,7 @@ def timesheet(request, year='0', month='0', day='0'):
     totalHours = 0
     for i in range(0, 7):
         date = monday_of_last_week + timedelta(days=7 + i)
-        taskHours = Task.objects.filter(user=request.user, created=date).aggregate(Sum('duration'))["duration__sum"]
+        taskHours = Task.objects.filter(user=request.user, date=date).aggregate(Sum('duration'))["duration__sum"]
         if not taskHours:
             taskHours = '0.00'
         else:
@@ -397,7 +400,7 @@ def timesheet(request, year='0', month='0', day='0'):
     previousDay = currentDay - timedelta(days=-1)
 
 
-    tasks = Task.objects.filter(user=request.user, modified__range=(datetime.combine(currentDay, time.min), datetime.combine(currentDay, time.max))).order_by("modified")
+    tasks = Task.objects.filter(user=request.user, date=currentDay).order_by("modified")
 
     userProjects = Project.objects.filter(Q(users__in=[request.user]), Q(is_active=1))
 
@@ -666,7 +669,6 @@ def admin_archive_user(request, userId):
 @login_required
 @user_passes_test(user_is_staff, login_url='/error/404', redirect_field_name='')
 def admin_user_list(request):
-    print "entrooo"
     users = userList(request)
     return render_to_response('admin/user/user_list.html', {'users': users, "search": request.GET.get("search")},
                               context_instance=RequestContext(request))

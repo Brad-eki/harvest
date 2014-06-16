@@ -248,24 +248,10 @@ class TaskForm(ModelForm):
 
         project = self.cleaned_data['projectId']
         task.project = project
-
         task.user = self.user
         task.description = self.cleaned_data['description']
         task.duration = self.cleaned_data['duration']
         task.type = self.cleaned_data['type']
-
-        if not self.cleaned_data.get('id'):
-            modified = None
-            try:
-                time = datetime.now().time().strftime("%H:%M:%S")
-                print time
-                strDate = str(self.cleaned_data['date']) +" "+time
-                modified = datetime.strptime(strDate, '%Y-%m-%d %H:%M:%S')
-            except ValueError:
-                raise ValueError("Incorrect data format")
-
-            task.modified = modified
-            task.created = modified
-
+        task.date = self.cleaned_data['date']
         task.save()
         return task

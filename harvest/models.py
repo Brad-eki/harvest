@@ -65,11 +65,12 @@ class Task(models.Model):
 
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     type = models.CharField(max_length=30,choices=TASK_TYPE,blank=False)
     duration = models.DecimalField(max_digits=5,decimal_places=2,blank=False)
-    created = models.DateTimeField()
-    modified = models.DateTimeField()
+    date = models.DateField()
+    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return self.description
@@ -77,7 +78,7 @@ class Task(models.Model):
     class Meta:
         verbose_name = 'task'
         verbose_name_plural = 'tasks'
-        ordering = ['-created']
+        ordering = ['-modified']
 
 
 User.add_to_class('thumbnail', models.ImageField(storage=OverwriteStorage(),upload_to = only_filename ))
