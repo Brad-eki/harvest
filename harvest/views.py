@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.db.models import Sum
 import array
 
+
 #-------------------------------------------------------------------------------------------------------------#
 #------------------------Helper Methods-----------------------------------------------------------------------#
 def last_report(user):
@@ -192,8 +193,10 @@ def home(request):
             hours = '0'
         aMonth['hours'] = hours
 
+    messages = Message.objects.all().order_by("created")[:50]
+
     return render_to_response('home/home.html',
-                              {'today': today, 'week': week, 'month': month, 'year': year, 'allMonths': allMonths},
+                              {'messages':messages,'today': today, 'week': week, 'month': month, 'year': year, 'allMonths': allMonths},
                               context_instance=RequestContext(request))
 
 
@@ -722,3 +725,39 @@ def login(request):
                                       context_instance=RequestContext(request))
 
 #---------------------------------------------------------------------------------#
+@login_required
+def chat(request):
+
+    if request.method == 'POST':
+        form = MessageForm(request.user,request.POST)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponse(json.dumps("{'error':'task not exist'}"), content_type="application/json")
+        else:
+            print form.errors
+            return HttpResponse(json.dumps("{'error':'unexpected error'}"), content_type="application/json")
+
+
+    messages = Message.objects.all().order_by("created")[:50]
+    jsonStr = "["
+    i=0
+    for msg in messages:
+        jsonStr += "{"
+        jsonStr += '"userId": "'+str(msg.user.id)+'",'
+        jsonStr += '"messageId": "'+str(msg.id)+'",'
+        jsonStr += '"thumbnail": "'+settings.MEDIA_URL+str(msg.user.thumbnail)+'",'
+
+        if msg.user.first_name:
+            jsonStr += '"userName": "'+msg.user.first_name+' '+msg.user.last_name+'",'
+        else:
+            jsonStr += '"userName": "'+msg.user.username+'",'
+        jsonStr += '"message": "'+msg.message+'",'
+        jsonStr += '"date": "'+msg.created.strftime('%H:%M')+'"'
+        jsonStr += "}"
+        if i != len(messages)-1:
+            jsonStr += ","
+        i+=1
+    jsonStr += "]"
+    return HttpResponse(json.dumps(jsonStr), content_type="application/json")
+

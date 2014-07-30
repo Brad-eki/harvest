@@ -81,5 +81,18 @@ class Task(models.Model):
         ordering = ['-modified']
 
 
+
+class Message(models.Model):
+    user = models.ForeignKey(User)
+    message = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name = 'Message'
+        verbose_name_plural = 'Messages'
+        ordering = ['-created']
+
+
+
+
 User.add_to_class('thumbnail', models.ImageField(storage=OverwriteStorage(),upload_to = only_filename ))
 User.add_to_class('projects', ManyToManyField_NoSyncdb(Project, related_name='projects',db_table='harvest_projects_users'))

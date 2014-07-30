@@ -255,3 +255,23 @@ class TaskForm(ModelForm):
         task.date = self.cleaned_data['date']
         task.save()
         return task
+
+#------------------------------------------------------------------------------------------------------------#
+
+class MessageForm(ModelForm):
+    class Meta:
+        model = Message
+        fields = ('message',)
+
+    user = User()
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(MessageForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+        msg = Message()
+        msg.user = self.user
+        msg.message = self.cleaned_data['message']
+        msg.save()
+        return msg

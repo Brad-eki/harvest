@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     url(r'^$','harvest.views.home'),
     url(r'^welcome/$','harvest.views.home'),
 
+    url(r'^chat/$','harvest.views.chat'),
 
     url(r'^reports/$', RedirectView.as_view(url='/reports/users/'), name='reports_user_redirect'),
     url(r'^reports/users/$','harvest.views.reports_user_list'),

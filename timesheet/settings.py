@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 #Enable timezone on the date fields, now i can use __month
 USE_TZ = True
 TIME_ZONE = 'America/Argentina/Buenos_Aires'
-
+TIMEZONE = 'America/Argentina/Buenos_Aires'
 # Application definition
 
 INSTALLED_APPS = (
