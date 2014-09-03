@@ -24,7 +24,9 @@
                 $('.image-picker .show-html :selected').prop('selected', false);
             }
         });
-
+ 
+		addDOMLoadEvent(preventPageShift);
+		window.onresize = function(){preventPageShift();} 
     </script>
 {% endblock %}
 
